@@ -1,37 +1,103 @@
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import Autoplay from "embla-carousel-autoplay";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { CarouselApi } from "@/components/ui/carousel";
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+} from "@/components/ui/carousel";
 import type { IMovie } from "@/entities/movie/model/movie-domain.types";
-import { imageUrl } from "@/shared/lib/format";
+import { HeroSlide } from "./hero-slide";
+
+const SLIDE_COUNT = 5;
+const AUTOPLAY_DELAY_MS = 6000;
 
 interface IHeroProps {
-	movie: Pick<IMovie, "id" | "title" | "backdropPath">;
+	movies: IMovie[];
 }
 
-export const Hero = (props: IHeroProps) => {
+/**
+ * Billboard-style hero: auto-advancing featured movies with progress bars.
+ * Accessibility contract: autoplay pauses on hover and resumes on leave,
+ * honors prefers-reduced-motion (no autoplay at all), and every slide is
+ * reachable via the focusable progress buttons.
+ */
+export function Hero({ movies }: IHeroProps) {
+	const [api, setApi] = useState<CarouselApi>();
+	const [active, setActive] = useState(0);
+	const [reducedMotion, setReducedMotion] = useState(false);
+
+	const slides = useMemo(() => movies.slice(0, SLIDE_COUNT), [movies]);
+
+	useEffect(() => {
+		const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setReducedMotion(query.matches);
+	}, []);
+
+	useEffect(() => {
+		if (!api) return;
+		const carousel = api;
+		function onSelect() {
+			setActive(carousel.selectedScrollSnap());
+		}
+		carousel.on("select", onSelect);
+		return () => {
+			carousel.off("select", onSelect);
+		};
+	}, [api]);
+
+	const scrollTo = useCallback((index: number) => api?.scrollTo(index), [api]);
+
+	const plugins = useMemo(
+		() =>
+			reducedMotion
+				? []
+				: [
+						// stopOnInteraction: false is required for pause-on-hover to resume:
+						// with the default true, the mouseleave listener is never attached
+						// and the first hover kills autoplay permanently.
+						Autoplay({
+							delay: AUTOPLAY_DELAY_MS,
+							stopOnMouseEnter: true,
+							stopOnInteraction: false,
+						}),
+					],
+		[reducedMotion],
+	);
+
+	if (slides.length === 0) return null;
+
 	return (
-		<section className="relative overflow-hidden rounded-xl">
-			<img
-				src={imageUrl(props.movie.backdropPath, "original") ?? ""}
-				alt={props.movie.title}
-				className="h-[420px] w-full object-cover"
-				loading="eager"
-				fetchPriority="high"
-				decoding="async"
-			/>
-			<div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-			<div className="absolute bottom-0 left-0 max-w-2xl p-6">
-				<h1 className="text-3xl font-extrabold">{props.movie.title}</h1>
-				<div className="mt-4 flex gap-3">
-					<Button asChild>
-						<Link
-							to="/movies/$movieId"
-							params={{ movieId: String(props.movie.id) }}
-						>
-							View Details
-						</Link>
-					</Button>
-				</div>
+		<section aria-label="Featured movies" className="relative">
+			<Carousel
+				opts={{ loop: true }}
+				plugins={plugins}
+				setApi={setApi}
+				className="overflow-hidden rounded-xl"
+			>
+				<CarouselContent className="ml-0">
+					{slides.map((movie, index) => (
+						<CarouselItem key={movie.id} className="pl-0">
+							<HeroSlide movie={movie} priority={index === 0} />
+						</CarouselItem>
+					))}
+				</CarouselContent>
+			</Carousel>
+
+			<div className="absolute right-6 bottom-4 z-10 flex gap-2">
+				{slides.map((movie, index) => (
+					<button
+						key={movie.id}
+						type="button"
+						aria-label={`Show featured movie ${index + 1} of ${slides.length}: ${movie.title}`}
+						aria-current={index === active}
+						onClick={() => scrollTo(index)}
+						className={`h-1 rounded-full transition-all duration-300 focus-visible:outline-2 focus-visible:outline-ring ${
+							index === active ? "w-8 bg-primary" : "w-4 bg-foreground/30"
+						}`}
+					/>
+				))}
 			</div>
 		</section>
 	);
-};
+}
