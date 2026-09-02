@@ -42,12 +42,74 @@ export const searchMoviesTool = defineTool({
 			}),
 		),
 	}),
-	async execute(_toolCallid, params) {
+	async execute(_toolCallId, params) {
 		try {
 			const data = await tmdbGet<TMovieListResponse>("/search/movie", {
 				query: params.query,
 				year: params.year,
 			});
+
+			return {
+				content: [
+					{
+						type: "text",
+						text: movieListToText(data),
+					},
+				],
+				details: { count: data.results.length },
+			};
+		} catch (error) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `ERROR: ${error instanceof Error ? error.message : String(error)}`,
+					},
+				],
+				details: undefined,
+			};
+		}
+	},
+});
+
+export const discoverMoviesTool = defineTool({
+	name: "discover_movies",
+	label: "Discover Movies",
+	description:
+		"Find movies using TMDB filters. Use when the user describes a mood, genre, era, or rating range.",
+	parameters: Type.Object({
+		with_genres: Type.Optional(
+			Type.String({
+				description: 'Comma-separated genre ids (AND), e.g. "878,9648"',
+			}),
+		),
+		year: Type.Optional(
+			Type.Number({
+				description: "Release year",
+			}),
+		),
+		"vote_average.gte": Type.Optional(
+			Type.Number({
+				description: "Minimum rating",
+			}),
+		),
+		"vote_count.gte": Type.Optional(
+			Type.Number({
+				description: "Minimum vote count",
+			}),
+		),
+		sort_by: Type.Optional(
+			Type.String({
+				description: 'Sort, e.g. "popularity.desc"',
+			}),
+		),
+	}),
+	async execute(_toolCallId, params) {
+		try {
+			const data = await tmdbGet<TMovieListResponse>(
+				"/discover/movie",
+				params as Record<string, string | number | undefined>,
+			);
 
 			return {
 				content: [
