@@ -36,6 +36,7 @@ export const HomePage = () => {
 				isLoading={popularTv.isLoading}
 				isError={popularTv.isError}
 				onRetry={() => popularTv.refetch()}
+				linked={false}
 			/>
 
 			<Row
