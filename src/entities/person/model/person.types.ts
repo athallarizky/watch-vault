@@ -1,6 +1,6 @@
 import type { ITmdbListResponse } from "@/shared/api/tmdb.types";
 
-export interface IPerson {
+export interface IPersonApi {
 	id: number;
 	name: string;
 	profile_path: string | null;
@@ -15,4 +15,4 @@ export interface IPerson {
 	}>;
 }
 
-export type TPersonListResponse = ITmdbListResponse<IPerson>;
+export type TPersonApiListResponse = ITmdbListResponse<IPersonApi>;

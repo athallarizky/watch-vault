@@ -1,6 +1,6 @@
 import type { ITmdbListResponse } from "@/shared/api/tmdb.types";
 
-export interface IMovie {
+export interface IMovieApi {
 	id: number;
 	title: string;
 	overview: string;
@@ -13,4 +13,4 @@ export interface IMovie {
 	genre_ids: number[];
 }
 
-export type TMovieListResponse = ITmdbListResponse<IMovie>;
+export type TMovieApiListResponse = ITmdbListResponse<IMovieApi>;
