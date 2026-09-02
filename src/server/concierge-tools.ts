@@ -163,8 +163,60 @@ export const getSimilarMoviesTool = defineTool({
 	},
 });
 
+export const getMovieDetailsTool = defineTool({
+	name: "get_movie_details",
+	label: "Get Movie Details",
+	description:
+		"Get details (overview, genres, rating, year) for a movie id. Use to explain WHY a movie matches.",
+	parameters: Type.Object({
+		movieId: Type.Number({
+			description: "TMDB movie id",
+		}),
+	}),
+	async execute(_toolCallId, params) {
+		try {
+			const data = await tmdbGet<{
+				id: number;
+				title: string;
+				overview: string;
+				release_date: string;
+				vote_average: number;
+				genres: Array<{ id: number; name: string }>;
+			}>(`/movie/${params.movieId}`);
+
+			const text = JSON.stringify(
+				{
+					id: data.id,
+					title: data.title,
+					year: data.release_date?.slice(0, 4),
+					rating: data.vote_average,
+					genres: data.genres.map((g) => g.name),
+					overview: data.overview?.slice(0, 400),
+				},
+				null,
+				2,
+			);
+
+			return {
+				content: [
+					{
+						type: "text",
+						text,
+					},
+				],
+				details: {
+					id: data.id,
+				},
+			};
+		} catch (error) {
+			return getError(error);
+		}
+	},
+});
+
 export const conciergeTools = [
 	searchMoviesTool,
 	discoverMoviesTool,
 	getSimilarMoviesTool,
+	getMovieDetailsTool,
 ];
