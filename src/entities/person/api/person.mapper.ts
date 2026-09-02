@@ -8,7 +8,7 @@ export function mapPerson(raw: IPersonApi): IPerson {
 		profilePath: raw.profile_path,
 		knownForDepartment: raw.known_for_department,
 		popularity: raw.popularity,
-		knownFor: raw.known_for.map((kf) => ({
+		knownFor: (raw.known_for ?? []).map((kf) => ({
 			id: kf.id,
 			title: kf.title,
 			name: kf.name,

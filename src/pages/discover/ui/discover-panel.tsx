@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { IMovieList } from "@/entities/movie/model/movie-domain.types";
 import { MovieCard } from "@/entities/movie/ui/movie-card";
+import type { IPersonList } from "@/entities/person/model/person-domain.types";
+import { PersonCard } from "@/entities/person/ui/person-card";
 import type { ITvShowList } from "@/entities/tv/model/tv-domain.types";
 import { TvCard } from "@/entities/tv/ui/tv-card";
 import type { TDiscoverData } from "../model/discover-tabs";
@@ -22,7 +24,7 @@ function SkeletonGrid() {
 }
 
 interface IDiscoverPanelProps {
-	kind: "movie" | "tv";
+	kind: "movie" | "tv" | "person";
 	data: TDiscoverData | undefined;
 	isLoading: boolean;
 	isError: boolean;
@@ -55,9 +57,14 @@ export function DiscoverPanel({
 				? (data as IMovieList).results.map((movie) => (
 						<MovieCard key={movie.id} movie={movie} />
 					))
-				: (data as ITvShowList).results.map((show) => (
-						<TvCard key={show.id} show={show} />
-					))}
+				: kind === "tv"
+					? (data as ITvShowList).results.map((show) => (
+							<TvCard key={show.id} show={show} />
+						))
+					: // Same serializer-transform union as discover-tabs: one guarded cast.
+						(data as unknown as IPersonList).results.map((person) => (
+							<PersonCard key={person.id} person={person} />
+						))}
 		</div>
 	);
 }
