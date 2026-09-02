@@ -1,5 +1,4 @@
 import { formatYear, imageUrl } from "@/shared/lib/format";
-import { MediaTypeChip } from "@/shared/ui/media-type-chip";
 import { RatingStar } from "@/shared/ui/rating-star";
 import type { ITvShow } from "../model/tv-domain.types";
 
@@ -24,7 +23,6 @@ export function TvCard({ show }: { show: ITvShow }) {
 						{show.name}
 					</div>
 				)}
-				<MediaTypeChip type="TV" />
 			</div>
 			<div className="mt-2 space-y-0.5">
 				<h3 className="line-clamp-1 text-sm font-medium">{show.name}</h3>
