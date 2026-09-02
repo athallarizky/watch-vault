@@ -1,5 +1,27 @@
-import { createServerFn } from "@tanstack/react-start";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { createSession } from "./llm-runtime";
+import { clientIp, rateLimit } from "./rate-limit";
+
+// Generous for a human chat, tight enough to blunt scripted abuse of the
+// costed LLM loop behind this endpoint.
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+
+const rateLimitMiddleware = createMiddleware({ type: "request" }).server(
+	({ request, next }) => {
+		const { allowed, retryAfterSeconds } = rateLimit(
+			`concierge:${clientIp(request)}`,
+			RATE_LIMIT,
+			RATE_WINDOW_MS,
+		);
+		if (!allowed) {
+			throw new Error(
+				`Too many requests. Please wait ${retryAfterSeconds}s and try again.`,
+			);
+		}
+		return next();
+	},
+);
 
 const SYSTEM_PROMPT = [
 	'You are "Concierge", a movie & TV recommendation agent.',
@@ -39,6 +61,7 @@ function buildPrompt(userInput: string, ctx: IConciergeContext): string {
 }
 
 export const concierge = createServerFn({ method: "POST" })
+	.middleware([rateLimitMiddleware])
 	.validator((data: { prompt: string; context?: IConciergeContext }) => data)
 	.handler(async ({ data }) => {
 		const prompt = buildPrompt(data.prompt, data.context ?? {});
