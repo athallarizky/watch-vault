@@ -50,3 +50,7 @@ yarn-error.log*
 # Misc scaffold
 __unconfig*
 todos.json
+
+# Skills tooling
+.agents/
+skills-lock.json
