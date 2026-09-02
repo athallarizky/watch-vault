@@ -19,7 +19,9 @@ export function WatchlistPage() {
 						watch.
 					</p>
 					<Button asChild>
-						<Link to="/discover">Browse Discover</Link>
+						<Link to="/discover" search={{ tab: "popular" }}>
+							Browse Discover
+						</Link>
 					</Button>
 				</div>
 			) : (
