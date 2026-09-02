@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatRating, formatYear, imageUrl } from "@/shared/lib/format";
+import { MediaTypeChip } from "@/shared/ui/media-type-chip";
 import type { IMovie } from "../model/movie-domain.types";
 
 export function MovieCard({ movie }: { movie: IMovie }) {
@@ -7,7 +8,7 @@ export function MovieCard({ movie }: { movie: IMovie }) {
 
 	return (
 		<article>
-			<div>
+			<div className="relative">
 				{poster ? (
 					<img
 						src={poster}
@@ -23,16 +24,15 @@ export function MovieCard({ movie }: { movie: IMovie }) {
 						{movie.title}
 					</div>
 				)}
-				<div className="mt-2 space-y-1">
-					<h3 className="line-clamp-1 text-sm font-semibold">{movie.title}</h3>
-					<div className="flex items-center justify-between gap-2">
-						<span className="text-xs text-muted-foreground">
-							{formatYear(movie.releaseDate)}
-						</span>
-						<Badge variant="secondary">
-							★ {formatRating(movie.voteAverage)}
-						</Badge>
-					</div>
+				<MediaTypeChip type="Movie" />
+			</div>
+			<div className="mt-2 space-y-1">
+				<h3 className="line-clamp-1 text-sm font-semibold">{movie.title}</h3>
+				<div className="flex items-center justify-between gap-2">
+					<span className="text-xs text-muted-foreground">
+						{formatYear(movie.releaseDate)}
+					</span>
+					<Badge variant="secondary">★ {formatRating(movie.voteAverage)}</Badge>
 				</div>
 			</div>
 		</article>
