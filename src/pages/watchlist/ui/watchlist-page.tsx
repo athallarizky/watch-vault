@@ -15,8 +15,8 @@ export function WatchlistPage() {
 			{items.length === 0 ? (
 				<div className="space-y-4">
 					<p className="text-sm text-muted-foreground">
-						Your watchlist is empty. Browse Discover and save movies you want
-						to watch.
+						Your watchlist is empty. Browse Discover and save movies you want to
+						watch.
 					</p>
 					<Button asChild>
 						<Link to="/discover">Browse Discover</Link>

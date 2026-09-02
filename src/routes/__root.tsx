@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { ConciergeDrawer } from "@/features/concierge";
 import { Nav } from "../app/ui/nav";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -47,6 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<Nav />
 				{children}
+				<ConciergeDrawer />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

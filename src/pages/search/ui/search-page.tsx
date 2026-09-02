@@ -1,7 +1,7 @@
-import { useSearchMovies } from "@/entities/movie/model/movie.queries";
-import { MovieCard } from "@/entities/movie/ui/movie-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchMovies } from "@/entities/movie/model/movie.queries";
+import { MovieCard } from "@/entities/movie/ui/movie-card";
 import { SearchBar } from "@/features/search";
 import { Route } from "@/routes/search";
 
