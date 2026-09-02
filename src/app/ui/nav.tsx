@@ -14,13 +14,15 @@ export function Nav() {
 				aria-label="Main navigation"
 				className="mx-auto flex h-14 w-[min(1280px,100%-2rem)] items-center gap-6"
 			>
+				{/* Wordmark hidden on small screens: four links fit better than
+				    a stretched brand at 375px. */}
 				<Link
 					to="/"
-					className="text-lg font-extrabold tracking-wide text-primary"
+					className="hidden text-lg font-extrabold tracking-wide text-primary sm:inline"
 				>
 					WATCH VAULT
 				</Link>
-				<ul className="flex items-center gap-4">
+				<ul className="flex items-center gap-3 sm:gap-4">
 					{NAV_LINKS.map((link) => (
 						<li key={link.to}>
 							<Link

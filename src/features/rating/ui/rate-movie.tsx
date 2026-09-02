@@ -50,7 +50,7 @@ export function RateMovie({ movieId }: IRateMovieProps) {
 				)}
 			</div>
 			{current !== undefined && (
-				<span className="text-[10px] text-muted-foreground/70">
+				<span className="text-[10px] text-muted-foreground/75">
 					Click the same star to remove
 				</span>
 			)}

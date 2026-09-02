@@ -45,7 +45,7 @@ function EmptyPrompt() {
 function NoResults({ query }: { query: string }) {
 	return (
 		<div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 py-16 text-center">
-			<SearchX aria-hidden="true" className="size-10 text-muted-foreground/40" />
+			<SearchX aria-hidden="true" className="size-10 text-muted-foreground/60" />
 			<div className="space-y-1">
 				<p className="font-medium">No results for &quot;{query}&quot;</p>
 				<p className="text-sm text-muted-foreground">
