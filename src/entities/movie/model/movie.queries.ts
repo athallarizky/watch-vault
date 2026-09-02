@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
+	getMovieCredits,
 	getMovieDetails,
 	getNowPlayingMovies,
 	getPopularMovies,
@@ -46,6 +47,14 @@ export function useMovieDetails(movieId: number) {
 	return useQuery({
 		queryKey: ["movie", "details", movieId],
 		queryFn: () => getMovieDetails({ data: { movieId } }),
+		staleTime: STALE_TIME,
+	});
+}
+
+export function useMovieCredits(movieId: number) {
+	return useQuery({
+		queryKey: ["movie", "credits", movieId],
+		queryFn: () => getMovieCredits({ data: { movieId } }),
 		staleTime: STALE_TIME,
 	});
 }

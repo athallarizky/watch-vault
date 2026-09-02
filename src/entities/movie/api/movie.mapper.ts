@@ -2,9 +2,11 @@ import type {
 	IMovieApi,
 	IMovieDetailsApi,
 	TMovieApiListResponse,
+	TMovieCreditsApi,
 } from "../model/movie.types";
 import type {
 	IMovie,
+	IMovieCredits,
 	IMovieDetails,
 	IMovieList,
 } from "../model/movie-domain.types";
@@ -45,5 +47,16 @@ export function mapMovieDetails(raw: IMovieDetailsApi): IMovieDetails {
 		voteCount: raw.vote_count,
 		runtime: raw.runtime,
 		genreNames: raw.genres.map((g) => g.name),
+	};
+}
+
+export function mapMovieCredits(raw: TMovieCreditsApi): IMovieCredits {
+	return {
+		cast: (raw.cast ?? []).map((member) => ({
+			id: member.id,
+			name: member.name,
+			character: member.character ?? "",
+			profilePath: member.profile_path,
+		})),
 	};
 }
