@@ -11,7 +11,7 @@ const STALE_TIME = 5 * 60_000;
 export function usePopularTv() {
 	return useQuery({
 		queryKey: ["tv", "popular"],
-		queryFn: () => getPopularTv(),
+		queryFn: () => getPopularTv({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -19,7 +19,7 @@ export function usePopularTv() {
 export function useTopRatedTv() {
 	return useQuery({
 		queryKey: ["tv", "top-rated"],
-		queryFn: () => getTopRatedTv(),
+		queryFn: () => getTopRatedTv({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -27,7 +27,7 @@ export function useTopRatedTv() {
 export function useOnTheAirTv() {
 	return useQuery({
 		queryKey: ["tv", "on-the-air"],
-		queryFn: () => getOnTheAirTv(),
+		queryFn: () => getOnTheAirTv({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -35,7 +35,7 @@ export function useOnTheAirTv() {
 export function useAiringTodayTv() {
 	return useQuery({
 		queryKey: ["tv", "airing-today"],
-		queryFn: () => getAiringTodayTv(),
+		queryFn: () => getAiringTodayTv({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }

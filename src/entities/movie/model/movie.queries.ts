@@ -13,7 +13,7 @@ const STALE_TIME = 5 * 60_000; // caching 5min
 export function usePopularMovies() {
 	return useQuery({
 		queryKey: ["movies", "popular"],
-		queryFn: () => getPopularMovies(),
+		queryFn: () => getPopularMovies({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -21,7 +21,7 @@ export function usePopularMovies() {
 export function useTopRatedMovies() {
 	return useQuery({
 		queryKey: ["movies", "top-rated"],
-		queryFn: () => getTopRatedMovies(),
+		queryFn: () => getTopRatedMovies({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -29,7 +29,7 @@ export function useTopRatedMovies() {
 export function useUpcomingMovies() {
 	return useQuery({
 		queryKey: ["movies", "upcoming"],
-		queryFn: () => getUpcomingMovies(),
+		queryFn: () => getUpcomingMovies({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
@@ -37,7 +37,7 @@ export function useUpcomingMovies() {
 export function useNowPlayingMovies() {
 	return useQuery({
 		queryKey: ["movies", "now-playing"],
-		queryFn: () => getNowPlayingMovies(),
+		queryFn: () => getNowPlayingMovies({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
