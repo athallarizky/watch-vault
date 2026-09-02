@@ -4,14 +4,14 @@ import { imageUrl } from "@/shared/lib/format";
 import type { IPerson } from "../model/person-domain.types";
 
 /**
- * Known-for titles inline: movie titles link to their detail page (the ids in
- * known_for are real TMDB ids); TV titles stay plain until a TV detail route
- * exists. Kept outside the profile link to avoid nested anchors.
+ * Known-for titles as a bare credits line (no sentence prefix): movie titles
+ * link to their detail page (the ids in known_for are real TMDB ids); TV
+ * titles stay plain until a TV detail route exists. Kept outside the profile
+ * link to avoid nested anchors.
  */
 function KnownForList({ person }: { person: IPerson }) {
 	return (
 		<p className="line-clamp-1 text-xs text-muted-foreground/70">
-			Known for{" "}
 			{person.knownFor.map((kf, index) => {
 				const title = kf.title ?? kf.name;
 				if (!title) return null;
