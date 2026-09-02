@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
 	getAiringTodayTv,
 	getNowPlayingMovies,
@@ -100,14 +100,27 @@ export function isTabId(value: string): value is TTabId {
 	return DISCOVER_TABS.some((tab) => tab.id === value);
 }
 
-export function useDiscoverTab(id: TTabId) {
+type TTabFetch = (input: { data: { page: number } }) => Promise<TDiscoverData>;
+
+/**
+ * Endless feed for the active tab. The query key carries a "feed" suffix so
+ * the paginated cache stays separate from the page-1 list queries the home
+ * rows use (they share the entity keys).
+ */
+export function useDiscoverTabInfinite(id: TTabId) {
 	const tab = getTab(id);
-	return useQuery({
-		queryKey: tab.queryKey,
+	return useInfiniteQuery({
+		queryKey: [...tab.queryKey, "feed"],
 		// The serializer transform above makes the per-tab fn types
 		// individually unassignable to the union; one guarded cast keeps
-		// the catalog data-driven instead of eight hand-written hooks.
-		queryFn: () => (tab.queryFn as unknown as () => Promise<TDiscoverData>)(),
+		// the catalog data-driven instead of nine hand-written hooks.
+		queryFn: ({ pageParam }) =>
+			(tab.queryFn as unknown as TTabFetch)({ data: { page: pageParam } }),
+		initialPageParam: 1,
+		getNextPageParam: (lastPage) =>
+			lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
 		staleTime: STALE_TIME,
 	});
 }
+
+export type TDiscoverFeed = ReturnType<typeof useDiscoverTabInfinite>;

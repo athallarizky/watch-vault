@@ -4,7 +4,7 @@ import {
 	getTab,
 	isTabId,
 	type TTabId,
-	useDiscoverTab,
+	useDiscoverTabInfinite,
 } from "../model/discover-tabs";
 import { DiscoverPanel } from "./discover-panel";
 import { TabBar } from "./tab-bar";
@@ -15,8 +15,7 @@ export function DiscoverPage() {
 	// The URL is the source of truth; unknown values fall back to the first tab.
 	const tabId: TTabId = isTabId(tab) ? tab : "popular";
 	const activeTab = getTab(tabId);
-
-	const { data, isLoading, isError, refetch } = useDiscoverTab(tabId);
+	const feed = useDiscoverTabInfinite(tabId);
 
 	// replace keeps one history entry per visit instead of per tab click.
 	const handleTabChange = (id: TTabId) =>
@@ -39,13 +38,7 @@ export function DiscoverPage() {
 				id="discover-panel"
 				aria-labelledby={`discover-tab-${tabId}`}
 			>
-				<DiscoverPanel
-					kind={activeTab.kind}
-					data={data}
-					isLoading={isLoading}
-					isError={isError}
-					onRetry={() => refetch()}
-				/>
+				<DiscoverPanel kind={activeTab.kind} feed={feed} />
 			</div>
 		</main>
 	);

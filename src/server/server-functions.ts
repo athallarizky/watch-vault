@@ -18,21 +18,37 @@ import type { TTvApiListResponse } from "@/entities/tv/model/tv.types";
 import { tmdbGet } from "./tmdb";
 
 // Movie
-export const getPopularMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieApiListResponse>("/movie/popular").then(mapMovieList),
-);
+export const getPopularMovies = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieApiListResponse>("/movie/popular", {
+			page: data.page,
+		}).then(mapMovieList),
+	);
 
-export const getTopRatedMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieApiListResponse>("/movie/top_rated").then(mapMovieList),
-);
+export const getTopRatedMovies = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieApiListResponse>("/movie/top_rated", {
+			page: data.page,
+		}).then(mapMovieList),
+	);
 
-export const getUpcomingMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieApiListResponse>("/movie/upcoming").then(mapMovieList),
-);
+export const getUpcomingMovies = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieApiListResponse>("/movie/upcoming", {
+			page: data.page,
+		}).then(mapMovieList),
+	);
 
-export const getNowPlayingMovies = createServerFn({ method: "GET" }).handler(
-	() => tmdbGet<TMovieApiListResponse>("/movie/now_playing").then(mapMovieList),
-);
+export const getNowPlayingMovies = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieApiListResponse>("/movie/now_playing", {
+			page: data.page,
+		}).then(mapMovieList),
+	);
 
 export const searchMovies = createServerFn({ method: "GET" })
 	.validator((data: { query: string }) => data)
@@ -49,23 +65,43 @@ export const getMovieDetails = createServerFn({ method: "GET" })
 	);
 
 // TV
-export const getPopularTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvApiListResponse>("/tv/popular").then(mapTvShowList),
-);
-export const getTopRatedTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvApiListResponse>("/tv/top_rated").then(mapTvShowList),
-);
-export const getOnTheAirTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvApiListResponse>("/tv/on_the_air").then(mapTvShowList),
-);
-export const getAiringTodayTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvApiListResponse>("/tv/airing_today").then(mapTvShowList),
-);
+export const getPopularTv = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TTvApiListResponse>("/tv/popular", { page: data.page }).then(
+			mapTvShowList,
+		),
+	);
+export const getTopRatedTv = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TTvApiListResponse>("/tv/top_rated", { page: data.page }).then(
+			mapTvShowList,
+		),
+	);
+export const getOnTheAirTv = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TTvApiListResponse>("/tv/on_the_air", { page: data.page }).then(
+			mapTvShowList,
+		),
+	);
+export const getAiringTodayTv = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TTvApiListResponse>("/tv/airing_today", {
+			page: data.page,
+		}).then(mapTvShowList),
+	);
 
 // People
-export const getPopularPeople = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TPersonApiListResponse>("/person/popular").then(mapPersonList),
-);
+export const getPopularPeople = createServerFn({ method: "GET" })
+	.validator((data: { page: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TPersonApiListResponse>("/person/popular", {
+			page: data.page,
+		}).then(mapPersonList),
+	);
 
 export const getPersonDetails = createServerFn({ method: "GET" })
 	.validator((data: { personId: number }) => data)

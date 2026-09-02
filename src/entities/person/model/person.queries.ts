@@ -10,7 +10,7 @@ const STALE_TIME = 5 * 60_000;
 export function usePopularPeople() {
 	return useQuery({
 		queryKey: ["person", "popular"],
-		queryFn: () => getPopularPeople(),
+		queryFn: () => getPopularPeople({ data: { page: 1 } }),
 		staleTime: STALE_TIME,
 	});
 }
