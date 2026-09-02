@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
 	{ to: "/", label: "Home" },
@@ -37,14 +36,6 @@ export function Nav() {
 						</li>
 					))}
 				</ul>
-				<Button
-					size="sm"
-					className="ml-auto"
-					disabled
-					aria-label="AI concierge"
-				>
-					✨ Concierge
-				</Button>
 			</nav>
 		</header>
 	);
