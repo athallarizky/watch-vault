@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-const NAV_LINKS = [
+export const NAV_LINKS = [
 	{ to: "/", label: "Home" },
 	{ to: "/discover", label: "Discover" },
 	{ to: "/search", label: "Search" },
@@ -27,7 +27,7 @@ export function Nav() {
 								to={link.to}
 								activeOptions={{ exact: link.to === "/" }}
 								activeProps={{
-									className: "font-semibold text-foreground",
+									className: "font-bold text-foreground",
 								}}
 								className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
 							>
