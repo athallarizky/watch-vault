@@ -6,14 +6,16 @@ import type { ITvShowList } from "@/entities/tv/model/tv-domain.types";
 import { TvCard } from "@/entities/tv/ui/tv-card";
 import type { TDiscoverData } from "../model/discover-tabs";
 
-const GRID_CLASS = "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5";
+// Mirrors the home row card density so both browse surfaces feel the same.
+const GRID_CLASS =
+	"grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6";
 
 function SkeletonGrid() {
 	return (
 		<div className={GRID_CLASS}>
-			{Array.from({ length: 10 }).map((_, i) => (
+			{Array.from({ length: 12 }).map((_, i) => (
 				// biome-ignore lint/suspicious/noArrayIndexKey: static placeholder list, never reordered
-				<Skeleton key={i} className="aspect-[2/3] w-full rounded-md" />
+				<Skeleton key={i} className="aspect-[2/3] w-full rounded-lg" />
 			))}
 		</div>
 	);

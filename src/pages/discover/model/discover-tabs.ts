@@ -87,6 +87,11 @@ export function getTab(id: TTabId): TTab {
 	return DISCOVER_TABS.find((tab) => tab.id === id) ?? DISCOVER_TABS[0];
 }
 
+/** Guards untrusted URL input before it reaches getTab. */
+export function isTabId(value: string): value is TTabId {
+	return DISCOVER_TABS.some((tab) => tab.id === value);
+}
+
 export function useDiscoverTab(id: TTabId) {
 	const tab = getTab(id);
 	return useQuery({
