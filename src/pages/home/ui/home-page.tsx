@@ -10,7 +10,7 @@ import { Row } from "./row";
 export const HomePage = () => {
 	// Popular Movies
 	const popularMovie = usePopularMovies();
-	const heroMovie = popularMovie.data?.results[0];
+	const heroMovies = popularMovie.data?.results ?? [];
 
 	// Upcoming Movie
 	const upcomingMovie = useUpcomingMovies();
@@ -20,7 +20,7 @@ export const HomePage = () => {
 
 	return (
 		<main className="mx-auto w-[min(1280px,100%-2rem)] space-y-8 py-8">
-			{heroMovie && <Hero movie={heroMovie} />}
+			<Hero movies={heroMovies} />
 
 			<Row
 				heading="Popular Movies"
