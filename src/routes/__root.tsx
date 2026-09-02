@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ConciergeDrawer } from "@/features/concierge";
+import { Footer } from "../app/ui/footer";
 import { Nav } from "../app/ui/nav";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -45,9 +46,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="flex min-h-[100dvh] flex-col">
 				<Nav />
-				{children}
+				<div className="flex-1">{children}</div>
+				<Footer />
 				<ConciergeDrawer />
 				<TanStackDevtools
 					config={{
