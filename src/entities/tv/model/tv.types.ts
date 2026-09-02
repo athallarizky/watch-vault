@@ -1,6 +1,6 @@
 import type { ITmdbListResponse } from "@/shared/api/tmdb.types";
 
-export interface ITvShow {
+export interface ITvShowApi {
 	id: number;
 	name: string;
 	overview: string;
@@ -13,4 +13,4 @@ export interface ITvShow {
 	genre_ids: number[];
 }
 
-export type TTvListResponse = ITmdbListResponse<ITvShow>;
+export type TTvApiListResponse = ITmdbListResponse<ITvShowApi>;

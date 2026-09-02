@@ -4,7 +4,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import type { IGenreListResponse } from "@/entities/genre/model/genre.types";
-import type { TMovieListResponse } from "@/entities/movie/model/movie.types";
+import type { TMovieApiListResponse } from "@/entities/movie/model/movie.types";
 import { tmdbGet } from "./tmdb";
 
 const MAX_RESULTS = 8;
@@ -25,7 +25,7 @@ function compactMovie(m: {
 	};
 }
 
-function movieListToText(list: TMovieListResponse): string {
+function movieListToText(list: TMovieApiListResponse): string {
 	const items = list.results.slice(0, MAX_RESULTS);
 	if (items.length === 0) return "No results.";
 	return JSON.stringify(items.map(compactMovie), null, 2);
@@ -60,7 +60,7 @@ export const searchMoviesTool = defineTool({
 	}),
 	async execute(_toolCallId, params) {
 		try {
-			const data = await tmdbGet<TMovieListResponse>("/search/movie", {
+			const data = await tmdbGet<TMovieApiListResponse>("/search/movie", {
 				query: params.query,
 				year: params.year,
 			});
@@ -114,7 +114,7 @@ export const discoverMoviesTool = defineTool({
 	}),
 	async execute(_toolCallId, params) {
 		try {
-			const data = await tmdbGet<TMovieListResponse>(
+			const data = await tmdbGet<TMovieApiListResponse>(
 				"/discover/movie",
 				params as Record<string, string | number | undefined>,
 			);
@@ -146,7 +146,7 @@ export const getSimilarMoviesTool = defineTool({
 	}),
 	async execute(_toolCallId, params) {
 		try {
-			const data = await tmdbGet<TMovieListResponse>(
+			const data = await tmdbGet<TMovieApiListResponse>(
 				`/movie/${params.movieId}/similar`,
 			);
 			return {

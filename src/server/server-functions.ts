@@ -1,41 +1,43 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { TMovieListResponse } from "@/entities/movie/model/movie.types";
-import type { TPersonListResponse } from "@/entities/person/model/person.types";
-import type { TTvListResponse } from "@/entities/tv/model/tv.types";
+import { mapMovieList } from "@/entities/movie/api/movie.mapper";
+import type { TMovieApiListResponse } from "@/entities/movie/model/movie.types";
+import type { TPersonApiListResponse } from "@/entities/person/model/person.types";
+import { mapTvShowList } from "@/entities/tv/api/tv.mapper";
+import type { TTvApiListResponse } from "@/entities/tv/model/tv.types";
 import { tmdbGet } from "./tmdb";
 
 // Movie
 export const getPopularMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieListResponse>("/movie/popular"),
+	tmdbGet<TMovieApiListResponse>("/movie/popular").then(mapMovieList),
 );
 
 export const getTopRatedMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieListResponse>("/movie/top_rated"),
+	tmdbGet<TMovieApiListResponse>("/movie/top_rated").then(mapMovieList),
 );
 
 export const getUpcomingMovies = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TMovieListResponse>("/movie/upcoming"),
+	tmdbGet<TMovieApiListResponse>("/movie/upcoming").then(mapMovieList),
 );
 
 export const getNowPlayingMovies = createServerFn({ method: "GET" }).handler(
-	() => tmdbGet<TMovieListResponse>("/movie/now_playing"),
+	() => tmdbGet<TMovieApiListResponse>("/movie/now_playing").then(mapMovieList),
 );
 
 // TV
 export const getPopularTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvListResponse>("/tv/popular"),
+	tmdbGet<TTvApiListResponse>("/tv/popular").then(mapTvShowList),
 );
 export const getTopRatedTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvListResponse>("/tv/top_rated"),
+	tmdbGet<TTvApiListResponse>("/tv/top_rated").then(mapTvShowList),
 );
 export const getOnTheAirTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvListResponse>("/tv/on_the_air"),
+	tmdbGet<TTvApiListResponse>("/tv/on_the_air").then(mapTvShowList),
 );
 export const getAiringTodayTv = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TTvListResponse>("/tv/airing_today"),
+	tmdbGet<TTvApiListResponse>("/tv/airing_today").then(mapTvShowList),
 );
 
 // People
 export const getPopularPeople = createServerFn({ method: "GET" }).handler(() =>
-	tmdbGet<TPersonListResponse>("/person/popular"),
+	tmdbGet<TPersonApiListResponse>("/person/popular"),
 );
