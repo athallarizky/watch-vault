@@ -4,6 +4,7 @@ import {
 	getNowPlayingMovies,
 	getOnTheAirTv,
 	getPopularMovies,
+	getPopularPeople,
 	getPopularTv,
 	getTopRatedMovies,
 	getTopRatedTv,
@@ -72,6 +73,13 @@ export const DISCOVER_TABS = [
 		kind: "tv",
 		queryKey: ["tv", "airing-today"],
 		queryFn: getAiringTodayTv,
+	},
+	{
+		id: "people",
+		label: "Popular People",
+		kind: "person",
+		queryKey: ["person", "popular"],
+		queryFn: getPopularPeople,
 	},
 ] as const;
 
