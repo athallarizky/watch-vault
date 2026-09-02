@@ -29,6 +29,14 @@ export const getNowPlayingMovies = createServerFn({ method: "GET" }).handler(
 	() => tmdbGet<TMovieApiListResponse>("/movie/now_playing").then(mapMovieList),
 );
 
+export const searchMovies = createServerFn({ method: "GET" })
+	.validator((data: { query: string }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieApiListResponse>("/search/movie", {
+			query: data.query,
+		}).then(mapMovieList),
+	);
+
 export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: { movieId: number }) => data)
 	.handler(({ data }) =>
