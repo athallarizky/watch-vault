@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { formatYear, imageUrl } from "@/shared/lib/format";
-import { MediaTypeChip } from "@/shared/ui/media-type-chip";
 import { RatingStar } from "@/shared/ui/rating-star";
 import type { TMovieCardData } from "../model/movie-domain.types";
 
@@ -31,7 +30,6 @@ export function MovieCard({ movie }: { movie: TMovieCardData }) {
 							{movie.title}
 						</div>
 					)}
-					<MediaTypeChip type="Movie" />
 					{movie.overview ? (
 						<div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent p-3 pt-10 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
 							<p className="line-clamp-3 text-xs leading-snug text-foreground/90">
