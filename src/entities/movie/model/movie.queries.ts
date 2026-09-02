@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+	getMovieDetails,
 	getNowPlayingMovies,
 	getPopularMovies,
 	getTopRatedMovies,
@@ -36,6 +37,14 @@ export function useNowPlayingMovies() {
 	return useQuery({
 		queryKey: ["movies", "now-playing"],
 		queryFn: () => getNowPlayingMovies(),
+		staleTime: STALE_TIME,
+	});
+}
+
+export function useMovieDetails(movieId: number) {
+	return useQuery({
+		queryKey: ["movie", "details", movieId],
+		queryFn: () => getMovieDetails({ data: { movieId } }),
 		staleTime: STALE_TIME,
 	});
 }

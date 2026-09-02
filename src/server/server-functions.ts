@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
-import { mapMovieList } from "@/entities/movie/api/movie.mapper";
-import type { TMovieApiListResponse } from "@/entities/movie/model/movie.types";
+import {
+	mapMovieDetails,
+	mapMovieList,
+} from "@/entities/movie/api/movie.mapper";
+import type {
+	IMovieDetailsApi,
+	TMovieApiListResponse,
+} from "@/entities/movie/model/movie.types";
 import type { TPersonApiListResponse } from "@/entities/person/model/person.types";
 import { mapTvShowList } from "@/entities/tv/api/tv.mapper";
 import type { TTvApiListResponse } from "@/entities/tv/model/tv.types";
@@ -22,6 +28,12 @@ export const getUpcomingMovies = createServerFn({ method: "GET" }).handler(() =>
 export const getNowPlayingMovies = createServerFn({ method: "GET" }).handler(
 	() => tmdbGet<TMovieApiListResponse>("/movie/now_playing").then(mapMovieList),
 );
+
+export const getMovieDetails = createServerFn({ method: "GET" })
+	.validator((data: { movieId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<IMovieDetailsApi>(`/movie/${data.movieId}`).then(mapMovieDetails),
+	);
 
 // TV
 export const getPopularTv = createServerFn({ method: "GET" }).handler(() =>
