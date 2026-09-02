@@ -3,6 +3,7 @@ import {
 	ModelRuntime,
 	SessionManager,
 } from "@earendil-works/pi-coding-agent";
+import { conciergeTools } from "./concierge-tools";
 
 function getProviderId(): string {
 	return process.env.CONCIERGE_PROVIDER ?? "zai";
@@ -49,7 +50,7 @@ export async function createSession() {
 		modelRuntime,
 		model,
 		noTools: "builtin",
-		customTools: [],
+		customTools: conciergeTools,
 	});
 
 	return { session, modelRuntime };
