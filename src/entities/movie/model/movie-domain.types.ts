@@ -17,3 +17,15 @@ export interface IMovieList {
 	totalPages: number;
 	totalResults: number;
 }
+
+export interface IMovieDetails {
+	id: number;
+	title: string;
+	overview: string;
+	posterPath: string | null;
+	backdropPath: string | null;
+	releaseDate: string;
+	voteAverage: number;
+	runtime: number;
+	genreNames: string[];
+}
