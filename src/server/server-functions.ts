@@ -7,8 +7,12 @@ import type {
 	IMovieDetailsApi,
 	TMovieApiListResponse,
 } from "@/entities/movie/model/movie.types";
-import { mapPersonList } from "@/entities/person/api/person.mapper";
-import type { TPersonApiListResponse } from "@/entities/person/model/person.types";
+import { mapPersonCredits, mapPersonDetails, mapPersonList } from "@/entities/person/api/person.mapper";
+import type {
+	IPersonDetailsApi,
+	TPersonApiListResponse,
+	TPersonCombinedCreditsApi,
+} from "@/entities/person/model/person.types";
 import { mapTvShowList } from "@/entities/tv/api/tv.mapper";
 import type { TTvApiListResponse } from "@/entities/tv/model/tv.types";
 import { tmdbGet } from "./tmdb";
@@ -62,3 +66,19 @@ export const getAiringTodayTv = createServerFn({ method: "GET" }).handler(() =>
 export const getPopularPeople = createServerFn({ method: "GET" }).handler(() =>
 	tmdbGet<TPersonApiListResponse>("/person/popular").then(mapPersonList),
 );
+
+export const getPersonDetails = createServerFn({ method: "GET" })
+	.validator((data: { personId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<IPersonDetailsApi>(`/person/${data.personId}`).then(
+			mapPersonDetails,
+		),
+	);
+
+export const getPersonCombinedCredits = createServerFn({ method: "GET" })
+	.validator((data: { personId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TPersonCombinedCreditsApi>(
+			`/person/${data.personId}/combined_credits`,
+		).then(mapPersonCredits),
+	);
