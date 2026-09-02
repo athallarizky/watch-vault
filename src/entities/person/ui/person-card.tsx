@@ -1,13 +1,12 @@
-import { Fragment } from "react";
 import { Link } from "@tanstack/react-router";
+import { Fragment } from "react";
 import { imageUrl } from "@/shared/lib/format";
 import type { IPerson } from "../model/person-domain.types";
 
 /**
- * Known-for titles as a bare credits line (no sentence prefix): movie titles
- * link to their detail page (the ids in known_for are real TMDB ids); TV
- * titles stay plain until a TV detail route exists. Kept outside the profile
- * link to avoid nested anchors.
+ * Known-for titles as a bare credits line (no sentence prefix): movie and TV
+ * titles link to their detail pages (the ids in known_for are real TMDB ids).
+ * Kept outside the profile link to avoid nested anchors.
  */
 function KnownForList({ person }: { person: IPerson }) {
 	return (
@@ -22,6 +21,14 @@ function KnownForList({ person }: { person: IPerson }) {
 							<Link
 								to="/movies/$movieId"
 								params={{ movieId: String(kf.id) }}
+								className="rounded-sm underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+							>
+								{title}
+							</Link>
+						) : kf.mediaType === "tv" ? (
+							<Link
+								to="/tv/$tvId"
+								params={{ tvId: String(kf.id) }}
 								className="rounded-sm underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring"
 							>
 								{title}

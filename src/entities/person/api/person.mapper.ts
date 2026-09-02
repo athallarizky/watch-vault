@@ -68,7 +68,9 @@ function mapPersonCredit(raw: IPersonCreditApi): IPersonCredit {
 	};
 }
 
-export function mapPersonCredits(raw: TPersonCombinedCreditsApi): IPersonCredits {
+export function mapPersonCredits(
+	raw: TPersonCombinedCreditsApi,
+): IPersonCredits {
 	return {
 		cast: (raw.cast ?? []).map(mapPersonCredit),
 		crew: (raw.crew ?? []).map(mapPersonCredit),

@@ -9,8 +9,8 @@ interface IPersonCreditCardProps {
 
 /**
  * One filmography entry: poster, title, and the person's role on it
- * (character for cast, job for crew). Movie entries link to their detail
- * page; TV entries render plain until a TV detail route exists.
+ * (character for cast, job for crew). Movie and TV entries link to their
+ * detail pages.
  */
 export function PersonCreditCard({ credit }: IPersonCreditCardProps) {
 	const poster = imageUrl(credit.posterPath, "w342");
@@ -50,6 +50,21 @@ export function PersonCreditCard({ credit }: IPersonCreditCardProps) {
 			</div>
 		</>
 	);
+
+	if (credit.mediaType === "tv") {
+		return (
+			<article>
+				<Link
+					to="/tv/$tvId"
+					params={{ tvId: String(credit.id) }}
+					aria-label={`View details for ${credit.title}`}
+					className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+				>
+					{body}
+				</Link>
+			</article>
+		);
+	}
 
 	if (credit.mediaType === "movie") {
 		return (

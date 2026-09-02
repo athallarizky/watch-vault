@@ -90,7 +90,9 @@ export function DiscoverPanel({ kind, feed }: IDiscoverPanelProps) {
 						: // Same serializer-transform union as discover-tabs: one guarded cast.
 							pages
 								.flatMap((page) => (page as unknown as IPersonList).results)
-								.map((person) => <PersonCard key={person.id} person={person} />)}
+								.map((person) => (
+									<PersonCard key={person.id} person={person} />
+								))}
 			</div>
 			{isFetchingNextPage ? <SkeletonGrid count={NEXT_PAGE_SKELETONS} /> : null}
 			<div ref={sentinelRef} aria-hidden="true" className="h-px" />

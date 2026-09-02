@@ -7,14 +7,21 @@ import type {
 	IMovieDetailsApi,
 	TMovieApiListResponse,
 } from "@/entities/movie/model/movie.types";
-import { mapPersonCredits, mapPersonDetails, mapPersonList } from "@/entities/person/api/person.mapper";
+import {
+	mapPersonCredits,
+	mapPersonDetails,
+	mapPersonList,
+} from "@/entities/person/api/person.mapper";
 import type {
 	IPersonDetailsApi,
 	TPersonApiListResponse,
 	TPersonCombinedCreditsApi,
 } from "@/entities/person/model/person.types";
-import { mapTvShowList } from "@/entities/tv/api/tv.mapper";
-import type { TTvApiListResponse } from "@/entities/tv/model/tv.types";
+import { mapTvShowDetails, mapTvShowList } from "@/entities/tv/api/tv.mapper";
+import type {
+	ITvShowDetailsApi,
+	TTvApiListResponse,
+} from "@/entities/tv/model/tv.types";
 import { tmdbGet } from "./tmdb";
 
 // Movie
@@ -92,6 +99,12 @@ export const getAiringTodayTv = createServerFn({ method: "GET" })
 		tmdbGet<TTvApiListResponse>("/tv/airing_today", {
 			page: data.page,
 		}).then(mapTvShowList),
+	);
+
+export const getTvDetails = createServerFn({ method: "GET" })
+	.validator((data: { tvId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<ITvShowDetailsApi>(`/tv/${data.tvId}`).then(mapTvShowDetails),
 	);
 
 // People

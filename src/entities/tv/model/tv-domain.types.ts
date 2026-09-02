@@ -17,3 +17,18 @@ export interface ITvShowList {
 	totalPages: number;
 	totalResults: number;
 }
+
+export interface ITvShowDetails {
+	id: number;
+	name: string;
+	overview: string;
+	posterPath: string | null;
+	backdropPath: string | null;
+	firstAirDate: string;
+	voteAverage: number;
+	voteCount: number;
+	episodeRunTime: number[];
+	numberOfSeasons: number;
+	numberOfEpisodes: number;
+	genreNames: string[];
+}
