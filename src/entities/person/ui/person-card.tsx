@@ -6,7 +6,7 @@ import type { IPerson } from "../model/person-domain.types";
 /**
  * Known-for titles inline: movie titles link to their detail page (the ids in
  * known_for are real TMDB ids); TV titles stay plain until a TV detail route
- * exists.
+ * exists. Kept outside the profile link to avoid nested anchors.
  */
 function KnownForList({ person }: { person: IPerson }) {
 	return (
@@ -41,28 +41,39 @@ export function PersonCard({ person }: { person: IPerson }) {
 
 	return (
 		<article>
-			<div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted ring-1 ring-border">
-				{profile ? (
-					<img
-						src={profile}
-						alt={person.name}
-						loading="lazy"
-						decoding="async"
-						className="h-full w-full object-cover"
-					/>
-				) : (
-					<div className="flex h-full w-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
-						{person.name}
-					</div>
-				)}
-			</div>
-			<div className="mt-2 space-y-0.5">
-				<h3 className="line-clamp-1 text-sm font-medium">{person.name}</h3>
-				<p className="text-xs text-muted-foreground">
-					{person.knownForDepartment}
-				</p>
-				{person.knownFor.length > 0 ? <KnownForList person={person} /> : null}
-			</div>
+			<Link
+				to="/people/$personId"
+				params={{ personId: String(person.id) }}
+				aria-label={`View profile for ${person.name}`}
+				className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+			>
+				<div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted ring-1 ring-border transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-xl group-hover:shadow-black/50 group-hover:ring-foreground/25 group-focus-within:scale-[1.02]">
+					{profile ? (
+						<img
+							src={profile}
+							alt={person.name}
+							loading="lazy"
+							decoding="async"
+							className="h-full w-full object-cover"
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
+							{person.name}
+						</div>
+					)}
+				</div>
+				<div className="mt-2 space-y-0.5">
+					<h3 className="line-clamp-1 text-sm font-medium">{person.name}</h3>
+					<p className="text-xs text-muted-foreground">
+						{person.knownForDepartment}
+					</p>
+				</div>
+			</Link>
+			{person.knownFor.length > 0 ? (
+				<div className="mt-0.5">
+					<KnownForList person={person} />
+				</div>
+			) : null}
 		</article>
 	);
 }
