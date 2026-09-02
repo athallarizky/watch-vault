@@ -30,3 +30,14 @@ export interface ITvShowDetailsApi {
 	number_of_episodes: number;
 	genres: Array<{ id: number; name: string }>;
 }
+
+export interface ITvCreditApi {
+	id: number;
+	name: string;
+	character?: string;
+	profile_path: string | null;
+}
+
+export interface TTvCreditsApi {
+	cast: ITvCreditApi[];
+}

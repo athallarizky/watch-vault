@@ -2,14 +2,20 @@ import { useParams } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTvDetails } from "@/entities/tv/model/tv.queries";
+import { useTvCredits, useTvDetails } from "@/entities/tv/model/tv.queries";
 import { formatYear, imageUrl } from "@/shared/lib/format";
 import { BackButton } from "@/shared/ui/back-button";
+import { CastCard } from "@/shared/ui/cast-card";
 import { RatingStar } from "@/shared/ui/rating-star";
+
+const CAST_GRID_CLASS =
+	"grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
+const CAST_LIMIT = 12;
 
 export const TvPage = () => {
 	const { tvId } = useParams({ from: "/tv_/$tvId" });
 	const { data, isLoading, isError, refetch } = useTvDetails(Number(tvId));
+	const credits = useTvCredits(Number(tvId));
 
 	if (isLoading) {
 		return (
@@ -105,6 +111,27 @@ export const TvPage = () => {
 					</p>
 				</div>
 			</section>
+
+			{credits.isLoading ? (
+				<section aria-label="Cast" className="space-y-4">
+					<h2 className="text-display-sm">Top Billed Cast</h2>
+					<div className={CAST_GRID_CLASS}>
+						{Array.from({ length: 6 }).map((_, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: static placeholder (never rerender)
+							<Skeleton key={i} className="aspect-[2/3] w-full rounded-lg" />
+						))}
+					</div>
+				</section>
+			) : (credits.data?.cast.length ?? 0) > 0 ? (
+				<section aria-label="Cast" className="space-y-4">
+					<h2 className="text-display-sm">Top Billed Cast</h2>
+					<div className={CAST_GRID_CLASS}>
+						{credits.data?.cast.slice(0, CAST_LIMIT).map((member) => (
+							<CastCard key={member.id} member={member} />
+						))}
+					</div>
+				</section>
+			) : null}
 		</main>
 	);
 };

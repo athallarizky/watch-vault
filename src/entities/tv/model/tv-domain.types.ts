@@ -32,3 +32,14 @@ export interface ITvShowDetails {
 	numberOfEpisodes: number;
 	genreNames: string[];
 }
+
+export interface ITvCredit {
+	id: number;
+	name: string;
+	character: string;
+	profilePath: string | null;
+}
+
+export interface ITvCredits {
+	cast: ITvCredit[];
+}

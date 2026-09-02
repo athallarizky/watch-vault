@@ -6,11 +6,11 @@ import {
 	useMovieCredits,
 	useMovieDetails,
 } from "@/entities/movie/model/movie.queries";
-import { MovieCastCard } from "@/entities/movie/ui/movie-cast-card";
 import { RateMovie } from "@/features/rating";
 import { AddToWatchlist } from "@/features/watchlist";
 import { formatYear, imageUrl } from "@/shared/lib/format";
 import { BackButton } from "@/shared/ui/back-button";
+import { CastCard } from "@/shared/ui/cast-card";
 import { RatingStar } from "@/shared/ui/rating-star";
 
 const CAST_GRID_CLASS =
@@ -127,7 +127,7 @@ export const MoviePage = () => {
 					<h2 className="text-display-sm">Top Billed Cast</h2>
 					<div className={CAST_GRID_CLASS}>
 						{cast.map((member) => (
-							<MovieCastCard key={member.id} credit={member} />
+							<CastCard key={member.id} member={member} />
 						))}
 					</div>
 				</section>
