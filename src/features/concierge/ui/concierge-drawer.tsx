@@ -137,7 +137,7 @@ export function ConciergeDrawer() {
 										a: ({ href, children }) => (
 											<a
 												href={href}
-												className="font-medium text-primary underline underline-offset-2"
+												className="font-medium text-primary-glow underline underline-offset-2"
 												onClick={(event) => {
 													if (!href?.startsWith("/")) return;
 													event.preventDefault();

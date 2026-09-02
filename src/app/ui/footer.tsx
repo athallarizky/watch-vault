@@ -48,7 +48,7 @@ export function Footer() {
 					</ul>
 				</nav>
 
-				<p className="text-xs text-muted-foreground/70">
+				<p className="text-xs text-muted-foreground/75">
 					© {new Date().getFullYear()} Watch Vault · Data by{" "}
 					<a
 						href={TMDB_URL}

@@ -10,7 +10,7 @@ import type { IPerson } from "../model/person-domain.types";
  */
 function KnownForList({ person }: { person: IPerson }) {
 	return (
-		<p className="line-clamp-1 text-xs text-muted-foreground/70">
+		<p className="line-clamp-1 text-xs text-muted-foreground/75">
 			{person.knownFor.map((kf, index) => {
 				const title = kf.title ?? kf.name;
 				if (!title) return null;

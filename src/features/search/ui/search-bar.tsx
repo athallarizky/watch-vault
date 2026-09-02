@@ -38,7 +38,7 @@ export function SearchBar({ defaultValue = "" }: ISearchBarProps) {
 				<div className="relative w-full sm:max-w-md">
 					<Search
 						aria-hidden="true"
-						className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/70"
+						className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/75"
 					/>
 					<Input
 						type="search"
