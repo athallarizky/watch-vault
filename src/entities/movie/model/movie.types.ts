@@ -27,3 +27,14 @@ export interface IMovieDetailsApi {
 	runtime: number;
 	genres: Array<{ id: number; name: string }>;
 }
+
+export interface IMovieCreditApi {
+	id: number;
+	name: string;
+	character?: string;
+	profile_path: string | null;
+}
+
+export interface TMovieCreditsApi {
+	cast: IMovieCreditApi[];
+}

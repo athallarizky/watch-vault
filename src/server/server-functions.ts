@@ -1,11 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
+	mapMovieCredits,
 	mapMovieDetails,
 	mapMovieList,
 } from "@/entities/movie/api/movie.mapper";
 import type {
 	IMovieDetailsApi,
 	TMovieApiListResponse,
+	TMovieCreditsApi,
 } from "@/entities/movie/model/movie.types";
 import {
 	mapPersonCredits,
@@ -69,6 +71,14 @@ export const getMovieDetails = createServerFn({ method: "GET" })
 	.validator((data: { movieId: number }) => data)
 	.handler(({ data }) =>
 		tmdbGet<IMovieDetailsApi>(`/movie/${data.movieId}`).then(mapMovieDetails),
+	);
+
+export const getMovieCredits = createServerFn({ method: "GET" })
+	.validator((data: { movieId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TMovieCreditsApi>(`/movie/${data.movieId}/credits`).then(
+			mapMovieCredits,
+		),
 	);
 
 // TV

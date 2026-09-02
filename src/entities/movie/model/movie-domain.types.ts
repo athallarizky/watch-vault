@@ -49,3 +49,14 @@ export type TMovieCardData = Pick<
 	| "voteCount"
 	| "overview"
 >;
+
+export interface IMovieCredit {
+	id: number;
+	name: string;
+	character: string;
+	profilePath: string | null;
+}
+
+export interface IMovieCredits {
+	cast: IMovieCredit[];
+}
