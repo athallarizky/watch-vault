@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMovieDetails } from "@/entities/movie/model/movie.queries";
+import { RateMovie } from "@/features/rating";
 import { AddToWatchlist } from "@/features/watchlist";
 import { formatRating, formatYear, imageUrl } from "@/shared/lib/format";
 
@@ -71,12 +72,9 @@ export const MoviePage = () => {
 						))}
 					</div>
 					<p className="max-w-2xl text-sm leading-relaxed">{data.overview}</p>
-					<div className="flex gap-3 pt-2">
+					<div className="flex items-center gap-4 pt-2">
 						<AddToWatchlist movie={data} />
-						{/* TODO: wire rating action */}
-						<Button disabled variant="outline" aria-label="Rate this movie">
-							★ Rate
-						</Button>
+						<RateMovie movieId={data.id} />
 					</div>
 				</div>
 			</div>
