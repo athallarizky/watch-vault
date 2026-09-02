@@ -1,4 +1,7 @@
-import { defineTool } from "@earendil-works/pi-coding-agent";
+import {
+	type AgentToolResult,
+	defineTool,
+} from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import type { TMovieListResponse } from "@/entities/movie/model/movie.types";
 import { tmdbGet } from "./tmdb";
@@ -25,6 +28,18 @@ function movieListToText(list: TMovieListResponse): string {
 	const items = list.results.slice(0, MAX_RESULTS);
 	if (items.length === 0) return "No results.";
 	return JSON.stringify(items.map(compactMovie), null, 2);
+}
+
+function getError(error: unknown): AgentToolResult<undefined> {
+	return {
+		content: [
+			{
+				type: "text",
+				text: `ERROR: ${error instanceof Error ? error.message : String(error)}`,
+			},
+		],
+		details: undefined,
+	};
 }
 
 export const searchMoviesTool = defineTool({
@@ -59,15 +74,7 @@ export const searchMoviesTool = defineTool({
 				details: { count: data.results.length },
 			};
 		} catch (error) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `ERROR: ${error instanceof Error ? error.message : String(error)}`,
-					},
-				],
-				details: undefined,
-			};
+			return getError(error);
 		}
 	},
 });
@@ -121,15 +128,43 @@ export const discoverMoviesTool = defineTool({
 				details: { count: data.results.length },
 			};
 		} catch (error) {
+			return getError(error);
+		}
+	},
+});
+
+export const getSimilarMoviesTool = defineTool({
+	name: "get_similar_movies",
+	label: "Similar Movies",
+	description:
+		'Get movies similar to a given id. Use when the user wants titles "like" another movie.',
+	parameters: Type.Object({
+		movieId: Type.Number({
+			description: "TMDB movie id",
+		}),
+	}),
+	async execute(_toolCallId, params) {
+		try {
+			const data = await tmdbGet<TMovieListResponse>(
+				`/movie/${params.movieId}/similar`,
+			);
 			return {
 				content: [
 					{
 						type: "text",
-						text: `ERROR: ${error instanceof Error ? error.message : String(error)}`,
+						text: movieListToText(data),
 					},
 				],
-				details: undefined,
+				details: { count: data.results.length },
 			};
+		} catch (error) {
+			return getError(error);
 		}
 	},
 });
+
+export const conciergeTools = [
+	searchMoviesTool,
+	discoverMoviesTool,
+	getSimilarMoviesTool,
+];
