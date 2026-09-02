@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 
@@ -34,15 +35,21 @@ export function SearchBar({ defaultValue = "" }: ISearchBarProps) {
 					navigate({ search: value ? { q: value } : {} });
 				}}
 			>
-				<Input
-					type="search"
-					value={value}
-					onChange={(event) => setValue(event.target.value)}
-					placeholder="Search movies..."
-					aria-label="Search movies"
-					className="w-full sm:max-w-md"
-					autoComplete="off"
-				/>
+				<div className="relative w-full sm:max-w-md">
+					<Search
+						aria-hidden="true"
+						className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/70"
+					/>
+					<Input
+						type="search"
+						value={value}
+						onChange={(event) => setValue(event.target.value)}
+						placeholder="Search movies..."
+						aria-label="Search movies"
+						className="w-full pl-9"
+						autoComplete="off"
+					/>
+				</div>
 			</form>
 		</search>
 	);

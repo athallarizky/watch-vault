@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import { MessageCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,8 +22,16 @@ const STALE_TIME = 5 * 60_000;
 export function ConciergeDrawer() {
 	const [open, setOpen] = useState(false);
 	const [prompt, setPrompt] = useState("");
+	const [reducedMotion, setReducedMotion] = useState(false);
 	const { answer, isStreaming, ask } = useConcierge();
 	const navigate = useNavigate();
+
+	// Looping gifs cannot honor reduced motion on their own — swap them for
+	// static icons when the user asks for less motion.
+	useEffect(() => {
+		const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setReducedMotion(query.matches);
+	}, []);
 
 	const params = useParams({ strict: false });
 	const routeMovieId =
@@ -61,10 +70,23 @@ export function ConciergeDrawer() {
 			<Button
 				aria-expanded={open}
 				aria-haspopup="dialog"
-				className="fixed right-6 bottom-6 z-50 rounded-full shadow-lg"
+				aria-label={
+					isStreaming ? "AI concierge is thinking" : "Open AI concierge"
+				}
+				className="fixed right-6 bottom-6 z-50 size-18 overflow-hidden rounded-full bg-transparent p-0 shadow-lg hover:bg-transparent active:scale-95"
 				onClick={() => setOpen((value) => !value)}
 			>
-				✨ Concierge
+				{reducedMotion ? (
+					<MessageCircle aria-hidden="true" className="size-6" />
+				) : (
+					<img
+						src={isStreaming ? "/assets/thinking.gif" : "/assets/idle.gif"}
+						alt=""
+						aria-hidden="true"
+						draggable={false}
+						className="size-18 object-cover"
+					/>
+				)}
 			</Button>
 
 			{open && (
@@ -74,14 +96,25 @@ export function ConciergeDrawer() {
 					className="fixed right-6 bottom-24 z-50 flex h-[440px] w-[min(400px,100vw-3rem)] flex-col rounded-xl border border-border bg-card shadow-xl"
 				>
 					<header className="flex items-center justify-between border-b border-border px-4 py-2">
-						<h2 className="text-sm font-bold">✨ Concierge</h2>
+						<h2 className="flex items-center gap-2 text-sm font-bold">
+							{reducedMotion ? null : (
+								<img
+									src="/assets/idle.gif"
+									alt=""
+									aria-hidden="true"
+									draggable={false}
+									className="size-5 rounded-full object-cover"
+								/>
+							)}
+							Concierge
+						</h2>
 						<Button
 							variant="ghost"
 							size="sm"
 							aria-label="Close concierge"
 							onClick={() => setOpen(false)}
 						>
-							✕
+							<X aria-hidden="true" />
 						</Button>
 					</header>
 
@@ -120,7 +153,20 @@ export function ConciergeDrawer() {
 								</Markdown>
 							</div>
 						) : isStreaming ? (
-							<Spinner className="text-muted-foreground" />
+							<div className="flex items-center gap-3 text-sm text-muted-foreground">
+								{reducedMotion ? (
+									<Spinner className="text-muted-foreground" />
+								) : (
+									<img
+										src="/assets/thinking.gif"
+										alt=""
+										aria-hidden="true"
+										draggable={false}
+										className="size-9 rounded-full"
+									/>
+								)}
+								Thinking...
+							</div>
 						) : (
 							<p className="text-sm text-muted-foreground">
 								Ask for recommendations — e.g. &quot;dark 90s sci-fi like Blade
