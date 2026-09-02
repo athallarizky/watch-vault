@@ -19,10 +19,15 @@ import type {
 	TPersonApiListResponse,
 	TPersonCombinedCreditsApi,
 } from "@/entities/person/model/person.types";
-import { mapTvShowDetails, mapTvShowList } from "@/entities/tv/api/tv.mapper";
+import {
+	mapTvCredits,
+	mapTvShowDetails,
+	mapTvShowList,
+} from "@/entities/tv/api/tv.mapper";
 import type {
 	ITvShowDetailsApi,
 	TTvApiListResponse,
+	TTvCreditsApi,
 } from "@/entities/tv/model/tv.types";
 import { tmdbGet } from "./tmdb";
 
@@ -115,6 +120,12 @@ export const getTvDetails = createServerFn({ method: "GET" })
 	.validator((data: { tvId: number }) => data)
 	.handler(({ data }) =>
 		tmdbGet<ITvShowDetailsApi>(`/tv/${data.tvId}`).then(mapTvShowDetails),
+	);
+
+export const getTvCredits = createServerFn({ method: "GET" })
+	.validator((data: { tvId: number }) => data)
+	.handler(({ data }) =>
+		tmdbGet<TTvCreditsApi>(`/tv/${data.tvId}/credits`).then(mapTvCredits),
 	);
 
 // People

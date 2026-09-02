@@ -4,6 +4,7 @@ import {
 	getOnTheAirTv,
 	getPopularTv,
 	getTopRatedTv,
+	getTvCredits,
 	getTvDetails,
 } from "@/server/server-functions";
 
@@ -45,6 +46,14 @@ export function useTvDetails(tvId: number) {
 	return useQuery({
 		queryKey: ["tv", "details", tvId],
 		queryFn: () => getTvDetails({ data: { tvId } }),
+		staleTime: STALE_TIME,
+	});
+}
+
+export function useTvCredits(tvId: number) {
+	return useQuery({
+		queryKey: ["tv", "credits", tvId],
+		queryFn: () => getTvCredits({ data: { tvId } }),
 		staleTime: STALE_TIME,
 	});
 }

@@ -193,8 +193,8 @@ export const PersonPage = () => {
 			</section>
 
 			{knownFor.length > 0 ? (
-				<section aria-label="Known for" className="space-y-4">
-					<h2 className="text-display-sm">Known For</h2>
+				<section aria-label="Popular titles" className="space-y-4">
+					<h2 className="text-display-sm">Popular Titles</h2>
 					<div className={GRID_CLASS}>
 						{knownFor.map((credit) => (
 							<PersonCreditCard

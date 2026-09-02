@@ -2,11 +2,13 @@ import type {
 	ITvShowApi,
 	ITvShowDetailsApi,
 	TTvApiListResponse,
+	TTvCreditsApi,
 } from "../model/tv.types";
 import type {
 	ITvShow,
 	ITvShowDetails,
 	ITvShowList,
+	ITvCredits,
 } from "../model/tv-domain.types";
 
 export function mapTvShow(raw: ITvShowApi): ITvShow {
@@ -47,5 +49,16 @@ export function mapTvShowDetails(raw: ITvShowDetailsApi): ITvShowDetails {
 		numberOfSeasons: raw.number_of_seasons,
 		numberOfEpisodes: raw.number_of_episodes,
 		genreNames: (raw.genres ?? []).map((g) => g.name),
+	};
+}
+
+export function mapTvCredits(raw: TTvCreditsApi): ITvCredits {
+	return {
+		cast: (raw.cast ?? []).map((member) => ({
+			id: member.id,
+			name: member.name,
+			character: member.character ?? "",
+			profilePath: member.profile_path,
+		})),
 	};
 }
