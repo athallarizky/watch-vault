@@ -42,6 +42,7 @@ export function mapMovieDetails(raw: IMovieDetailsApi): IMovieDetails {
 		backdropPath: raw.backdrop_path,
 		releaseDate: raw.release_date,
 		voteAverage: raw.vote_average,
+		voteCount: raw.vote_count,
 		runtime: raw.runtime,
 		genreNames: raw.genres.map((g) => g.name),
 	};

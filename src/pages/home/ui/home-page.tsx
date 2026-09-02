@@ -3,7 +3,7 @@ import {
 	useUpcomingMovies,
 } from "@/entities/movie/model/movie.queries";
 import { usePopularTv } from "@/entities/tv/model/tv.queries";
-import { movieToRowItem, tvToRowItem } from "../model/row-adapters";
+import { movieToRowItem, tvToRowItem, upcomingMovieToRowItem } from "../model/row-adapters";
 import { Hero } from "./hero";
 import { Row } from "./row";
 
@@ -28,6 +28,7 @@ export const HomePage = () => {
 				isLoading={popularMovie.isLoading}
 				isError={popularMovie.isError}
 				onRetry={() => popularMovie.refetch()}
+				seeAllTab="popular"
 			/>
 
 			<Row
@@ -37,14 +38,16 @@ export const HomePage = () => {
 				isError={popularTv.isError}
 				onRetry={() => popularTv.refetch()}
 				linked={false}
+				seeAllTab="tv-popular"
 			/>
 
 			<Row
 				heading="Upcoming Movies"
-				items={(upcomingMovie.data?.results ?? []).map(movieToRowItem)}
+				items={(upcomingMovie.data?.results ?? []).map(upcomingMovieToRowItem)}
 				isLoading={upcomingMovie.isLoading}
 				isError={upcomingMovie.isError}
 				onRetry={() => upcomingMovie.refetch()}
+				seeAllTab="upcoming"
 			/>
 		</main>
 	);
