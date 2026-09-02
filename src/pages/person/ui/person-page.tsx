@@ -1,16 +1,16 @@
+import { useParams } from "@tanstack/react-router";
 import { useLayoutEffect, useRef, useState } from "react";
-import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { IPersonCredit } from "@/entities/person/model/person-domain.types";
 import {
 	usePersonCredits,
 	usePersonDetails,
 } from "@/entities/person/model/person.queries";
+import type { IPersonCredit } from "@/entities/person/model/person-domain.types";
 import { PersonCreditCard } from "@/entities/person/ui/person-credit-card";
 import { formatDateShort, imageUrl } from "@/shared/lib/format";
+import { BackButton } from "@/shared/ui/back-button";
 
 const GRID_CLASS =
 	"grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6";
@@ -40,16 +40,17 @@ function personAge(birthday: string, deathday: string | null): number | null {
  */
 function Biography({ text }: { text: string }) {
 	const [expanded, setExpanded] = useState(false);
-	const [heights, setHeights] = useState<{ collapsed: number; full: number } | null>(
-		null,
-	);
+	const [heights, setHeights] = useState<{
+		collapsed: number;
+		full: number;
+	} | null>(null);
 	const probeRef = useRef<HTMLParagraphElement>(null);
 
 	useLayoutEffect(() => {
 		const el = probeRef.current;
 		if (!el || heights) return;
 		setHeights({ collapsed: el.offsetHeight, full: el.scrollHeight });
-	}, [text, heights]);
+	}, [heights]);
 
 	if (!text) {
 		return <p className="text-sm text-muted-foreground">No biography yet.</p>;
@@ -90,36 +91,6 @@ function Biography({ text }: { text: string }) {
 				</Button>
 			) : null}
 		</div>
-	);
-}
-
-/**
- * History back when the page was reached by in-app navigation (keeps the
- * origin's scroll and query state); direct opens such as a new tab fall back
- * to the people listing instead of leaving the site.
- */
-function BackButton() {
-	const router = useRouter();
-	const navigate = useNavigate({ from: "/people/$personId" });
-
-	function goBack() {
-		if (window.history.length > 1) {
-			router.history.back();
-		} else {
-			navigate({ to: "/discover", search: { tab: "people" } });
-		}
-	}
-
-	return (
-		<Button
-			variant="ghost"
-			size="sm"
-			onClick={goBack}
-			className="-ml-2 text-muted-foreground hover:text-foreground"
-		>
-			<ArrowLeft aria-hidden="true" />
-			Back
-		</Button>
 	);
 }
 
@@ -167,17 +138,20 @@ export const PersonPage = () => {
 	const person = details.data;
 	const profile = imageUrl(person.profilePath, "h632");
 	// Directors and writers may have no cast entries — crew is their filmography.
-	const roles = (credits.data?.cast.length ? credits.data.cast : credits.data?.crew) ?? [];
+	const roles =
+		(credits.data?.cast.length ? credits.data.cast : credits.data?.crew) ?? [];
 	const knownFor = roles
 		.filter((credit) => credit.posterPath)
 		.sort(byVoteCountDesc)
 		.slice(0, 10);
 	const filmography = [...roles].sort(byDateDesc);
-	const age = person.birthday ? personAge(person.birthday, person.deathday) : null;
+	const age = person.birthday
+		? personAge(person.birthday, person.deathday)
+		: null;
 
 	return (
 		<main className="mx-auto w-[min(1280px,100%-2rem)] space-y-10 py-8">
-			<BackButton />
+			<BackButton fallback={{ to: "/discover", search: { tab: "people" } }} />
 			<section
 				aria-label={`${person.name} profile`}
 				className="flex flex-col gap-6 sm:flex-row"
@@ -223,7 +197,10 @@ export const PersonPage = () => {
 					<h2 className="text-display-sm">Known For</h2>
 					<div className={GRID_CLASS}>
 						{knownFor.map((credit) => (
-							<PersonCreditCard key={`${credit.mediaType}-${credit.id}`} credit={credit} />
+							<PersonCreditCard
+								key={`${credit.mediaType}-${credit.id}`}
+								credit={credit}
+							/>
 						))}
 					</div>
 				</section>
@@ -234,7 +211,10 @@ export const PersonPage = () => {
 					<h2 className="text-display-sm">Credits</h2>
 					<div className={GRID_CLASS}>
 						{filmography.map((credit) => (
-							<PersonCreditCard key={`${credit.mediaType}-${credit.id}-credit`} credit={credit} />
+							<PersonCreditCard
+								key={`${credit.mediaType}-${credit.id}-credit`}
+								credit={credit}
+							/>
 						))}
 					</div>
 				</section>

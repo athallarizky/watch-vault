@@ -4,6 +4,7 @@ import {
 	getOnTheAirTv,
 	getPopularTv,
 	getTopRatedTv,
+	getTvDetails,
 } from "@/server/server-functions";
 
 const STALE_TIME = 5 * 60_000;
@@ -36,6 +37,14 @@ export function useAiringTodayTv() {
 	return useQuery({
 		queryKey: ["tv", "airing-today"],
 		queryFn: () => getAiringTodayTv({ data: { page: 1 } }),
+		staleTime: STALE_TIME,
+	});
+}
+
+export function useTvDetails(tvId: number) {
+	return useQuery({
+		queryKey: ["tv", "details", tvId],
+		queryFn: () => getTvDetails({ data: { tvId } }),
 		staleTime: STALE_TIME,
 	});
 }

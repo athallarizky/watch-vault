@@ -28,8 +28,8 @@ interface IRowProps {
 	isLoading: boolean;
 	isError: boolean;
 	onRetry: () => void;
-	/** Set false for items with no detail route in scope (e.g. TV) — renders plain cards. */
-	linked?: boolean;
+	/** Detail route kind for the cards; omit to render plain, non-linked cards. */
+	detail?: "movie" | "tv";
 	/** Discover tab id carried into the See All deep link (e.g. "tv-popular"). */
 	seeAllTab?: string;
 }
@@ -121,8 +121,16 @@ function RowBody(props: IRowProps) {
 			<CarouselContent>
 				{props.items.map((item) => (
 					<CarouselItem key={item.id} className={SLIDE_BASIS}>
-						{props.linked === false ? (
+						{props.detail === undefined ? (
 							<ItemContent item={item} />
+						) : props.detail === "tv" ? (
+							<Link
+								to="/tv/$tvId"
+								params={{ tvId: String(item.id) }}
+								className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+							>
+								<ItemContent item={item} />
+							</Link>
 						) : (
 							<Link
 								to="/movies/$movieId"
