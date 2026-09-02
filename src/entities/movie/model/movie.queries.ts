@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
 	getMovieDetails,
 	getNowPlayingMovies,
 	getPopularMovies,
 	getTopRatedMovies,
 	getUpcomingMovies,
+	searchMovies,
 } from "@/server/server-functions";
 
 const STALE_TIME = 5 * 60_000; // caching 5min
@@ -46,5 +47,14 @@ export function useMovieDetails(movieId: number) {
 		queryKey: ["movie", "details", movieId],
 		queryFn: () => getMovieDetails({ data: { movieId } }),
 		staleTime: STALE_TIME,
+	});
+}
+
+export function useSearchMovies(query: string) {
+	return useQuery({
+		queryKey: ["movies", "search", query],
+		queryFn: () => searchMovies({ data: { query } }),
+		enabled: !!query,
+		placeholderData: keepPreviousData,
 	});
 }
