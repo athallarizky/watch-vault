@@ -3,6 +3,7 @@ import {
 	defineTool,
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import type { IGenreListResponse } from "@/entities/genre/model/genre.types";
 import type { TMovieListResponse } from "@/entities/movie/model/movie.types";
 import { tmdbGet } from "./tmdb";
 
@@ -214,9 +215,36 @@ export const getMovieDetailsTool = defineTool({
 	},
 });
 
+export const getGenresTool = defineTool({
+	name: "get_genres",
+	label: "List Genres",
+	description:
+		"List TMDB genre ids and names. Use when you need to translate a genre name to an id for discover.",
+	parameters: Type.Object({}),
+	async execute() {
+		try {
+			const data = await tmdbGet<IGenreListResponse>("/genre/movie/list");
+			const text = JSON.stringify(data.genres, null, 2);
+
+			return {
+				content: [
+					{
+						type: "text",
+						text,
+					},
+				],
+				details: { count: data.genres.length },
+			};
+		} catch (error) {
+			return getError(error);
+		}
+	},
+});
+
 export const conciergeTools = [
 	searchMoviesTool,
 	discoverMoviesTool,
 	getSimilarMoviesTool,
 	getMovieDetailsTool,
+	getGenresTool,
 ];
