@@ -29,3 +29,13 @@ export interface IMovieDetails {
 	runtime: number;
 	genreNames: string[];
 }
+
+/**
+ * The subset of movie data that cards (and persisted collections like the
+ * watchlist) actually consume. Both IMovie (list endpoints) and IMovieDetails
+ * (detail endpoint) structurally satisfy it.
+ */
+export type TMovieCardData = Pick<
+	IMovie,
+	"id" | "title" | "posterPath" | "releaseDate" | "voteAverage"
+>;
