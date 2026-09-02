@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { IMovie } from "@/entities/movie/model/movie-domain.types";
-import { formatRating, formatYear, imageUrl } from "@/shared/lib/format";
+import { formatYear, imageUrl } from "@/shared/lib/format";
+import { RatingStar } from "@/shared/ui/rating-star";
 
 interface IHeroSlideProps {
 	movie: IMovie;
@@ -37,7 +38,9 @@ export function HeroSlide({ movie, priority }: IHeroSlideProps) {
 					<span className="text-sm text-muted-foreground">
 						{formatYear(movie.releaseDate)}
 					</span>
-					<Badge variant="secondary">★ {formatRating(movie.voteAverage)}</Badge>
+					<Badge variant="secondary">
+						<RatingStar vote={movie.voteAverage} voteCount={movie.voteCount} />
+					</Badge>
 				</div>
 				<p className="mt-3 line-clamp-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
 					{movie.overview}

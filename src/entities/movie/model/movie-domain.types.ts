@@ -26,6 +26,7 @@ export interface IMovieDetails {
 	backdropPath: string | null;
 	releaseDate: string;
 	voteAverage: number;
+	voteCount: number;
 	runtime: number;
 	genreNames: string[];
 }
@@ -34,8 +35,17 @@ export interface IMovieDetails {
  * The subset of movie data that cards (and persisted collections like the
  * watchlist) actually consume. Both IMovie (list endpoints) and IMovieDetails
  * (detail endpoint) structurally satisfy it.
+ *
+ * Note: entries persisted before voteCount/overview were added will not have
+ * them at runtime — card rendering treats them as optional for that reason.
  */
 export type TMovieCardData = Pick<
 	IMovie,
-	"id" | "title" | "posterPath" | "releaseDate" | "voteAverage"
+	| "id"
+	| "title"
+	| "posterPath"
+	| "releaseDate"
+	| "voteAverage"
+	| "voteCount"
+	| "overview"
 >;
