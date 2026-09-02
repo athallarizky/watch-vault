@@ -46,9 +46,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="flex min-h-[100dvh] flex-col">
+			<body>
 				<Nav />
-				<div className="flex-1">{children}</div>
+				{children}
 				<Footer />
 				<ConciergeDrawer />
 				<TanStackDevtools

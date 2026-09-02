@@ -16,7 +16,7 @@ const iconLinkClass =
 
 export function Footer() {
 	return (
-		<footer className="mt-12 border-t border-border">
+		<footer className="mt-auto border-t border-border">
 			<div className="mx-auto w-[min(1280px,100%-2rem)] space-y-6 py-10">
 				<div className="flex items-center gap-5">
 					{SOCIAL_LINKS.map(({ href, label, Icon }) => (

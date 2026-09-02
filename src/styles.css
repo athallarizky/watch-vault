@@ -165,6 +165,11 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
+  /* Sticky-footer layout lives here, unlayered: cascade layers would let the
+     scaffold min-height rule above outrank utility classes on <body>. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
