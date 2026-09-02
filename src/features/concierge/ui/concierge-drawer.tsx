@@ -1,14 +1,46 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { MessageCircle, X } from "lucide-react";
+import { Film, Lightbulb, MessageCircle, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { getMovieDetails } from "@/server/server-functions";
 import { useConcierge } from "../api/use-concierge";
+
+const TIPS = [
+	{
+		Icon: Lightbulb,
+		title: "Ask for recommendations",
+		description:
+			"Describe a mood, an era, or a movie you love and get a shortlist with links.",
+		example: "dark 90s sci-fi like Blade Runner",
+	},
+	{
+		Icon: Search,
+		title: "Search by genre or vibe",
+		description:
+			"The agent can combine genres, decades, and ratings while searching.",
+		example: "a fun comedy from the 2000s",
+	},
+	{
+		Icon: Film,
+		title: "Ask for similar movies",
+		description:
+			"Open any movie detail page first: the concierge knows which movie you are viewing.",
+		example: "something similar to this one",
+	},
+] as const;
 
 const STALE_TIME = 5 * 60_000;
 
@@ -108,14 +140,56 @@ export function ConciergeDrawer() {
 							)}
 							Concierge
 						</h2>
-						<Button
-							variant="ghost"
-							size="sm"
-							aria-label="Close concierge"
-							onClick={() => setOpen(false)}
-						>
-							<X aria-hidden="true" />
-						</Button>
+						<div className="flex items-center gap-1">
+							<Dialog>
+								<DialogTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										aria-label="What the concierge can do"
+									>
+										<Lightbulb aria-hidden="true" />
+									</Button>
+								</DialogTrigger>
+								<DialogContent className="sm:max-w-md">
+									<DialogHeader>
+										<DialogTitle>What the concierge can do</DialogTitle>
+										<DialogDescription>
+											Three ways to get the most out of it.
+										</DialogDescription>
+									</DialogHeader>
+									<ul className="space-y-4">
+										{TIPS.map(({ Icon, title, description, example }) => (
+											<li key={title} className="flex gap-3">
+												<span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary">
+													<Icon
+														aria-hidden="true"
+														className="size-4 text-foreground"
+													/>
+												</span>
+												<div className="min-w-0 space-y-1">
+													<p className="text-sm font-medium">{title}</p>
+													<p className="text-sm text-muted-foreground">
+														{description}
+													</p>
+													<p className="font-mono text-xs text-muted-foreground">
+														&quot;{example}&quot;
+													</p>
+												</div>
+											</li>
+										))}
+									</ul>
+								</DialogContent>
+							</Dialog>
+							<Button
+								variant="ghost"
+								size="sm"
+								aria-label="Close concierge"
+								onClick={() => setOpen(false)}
+							>
+								<X aria-hidden="true" />
+							</Button>
+						</div>
 					</header>
 
 					<div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
