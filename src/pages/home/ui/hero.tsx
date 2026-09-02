@@ -27,7 +27,7 @@ export const Hero = (props: IHeroProps) => {
 							to="/movies/$movieId"
 							params={{ movieId: String(props.movie.id) }}
 						>
-							Lihat Detail
+							View Details
 						</Link>
 					</Button>
 				</div>
