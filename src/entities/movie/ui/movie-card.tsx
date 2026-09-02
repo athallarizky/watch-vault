@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { formatRating, formatYear, imageUrl } from "@/shared/lib/format";
 import { MediaTypeChip } from "@/shared/ui/media-type-chip";
-import type { IMovie } from "../model/movie-domain.types";
+import type { TMovieCardData } from "../model/movie-domain.types";
 
-export function MovieCard({ movie }: { movie: IMovie }) {
+export function MovieCard({ movie }: { movie: TMovieCardData }) {
 	const poster = imageUrl(movie.posterPath, "w185");
 
 	return (
