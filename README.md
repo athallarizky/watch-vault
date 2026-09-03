@@ -1,217 +1,106 @@
-Welcome to your new TanStack Start app!
+# Watch Vault
 
-# Getting Started
+A movie and TV catalog built on the TMDB API, with an AI concierge that can actually search the catalog while it talks to you. Ask it for "a dark 90s sci-fi like Blade Runner" and it queries TMDB, picks real titles, and links straight to their pages.
 
-To run this application:
+**Live demo:** https://watch-vault.athallarizky.com
+
+## Features
+
+- Browse movies, TV shows, and people across 9 categories (popular, top rated, upcoming, now playing, on the air, airing today, popular people)
+- Infinite scroll on Discover, with the next page prefetched before you reach the bottom
+- Detail pages for movies, TV shows, and people, all cross-linked: movie → cast → person profile → filmography → another title
+- Search driven by the URL, so queries are shareable and the back button behaves
+- Watchlist and star ratings, persisted locally
+- An AI concierge with streaming answers, conversation memory, and rate limiting
+
+## The AI concierge
+
+This is not a chatbot bolted on top of the app. It is a tool-using agent built on the [Pi agent SDK](https://www.npmjs.com/package/@earendil-works/pi-coding-agent):
+
+1. You ask a question.
+2. The model decides which TMDB tool to call: search, discover, similar movies, movie details, or genres.
+3. Tool results come back, and the model may call another tool before answering.
+4. The answer streams to the browser token by token.
+
+Because every fact comes from a tool result, the agent does not invent titles, years, or ratings.
+
+A few details that make it feel like a product:
+
+- **Page context.** On a movie detail page, the agent knows which movie you are viewing. "Something similar to this one" just works.
+- **Conversation memory.** The transcript is replayed on every turn, so follow-ups like "explain the second one" land correctly.
+- **Clickable answers.** Recommended titles are rendered as markdown links to internal pages, intercepted for SPA navigation (no full reload).
+- **Abuse guards.** The endpoint costs real money per request, so it is rate limited to 10 requests per minute per IP, stays on the topic of movies and TV, and runs with in-memory credentials so no filesystem access is needed on serverless hosts.
+
+## Architecture
+
+### Feature-Sliced Design (FSD)
+
+The `src` folder is organized in layers, and each layer may only import from the layers below it:
+
+```
+pages     → one folder per screen (home, discover, search, watchlist, movie, tv, person)
+features  → self-contained user actions (watchlist, rating, search, concierge)
+entities  → business data: movie, tv, person, genre (types, mappers, queries, cards)
+shared    → helpers with no business knowledge (formatting, generic UI)
+```
+
+The payoff: everything about "movie" lives in one place, a page never reaches into another page's internals, and dependencies only point downward, so the app stays easy to change as it grows.
+
+### Anti-Corruption Layer (ACL)
+
+TMDB speaks snake_case and returns far more fields than the app uses. Every response passes through a mapper at the server boundary before anything reaches the UI:
+
+```
+vote_average   → voteAverage
+poster_path    → posterPath
+known_for      → knownFor
+```
+
+Only the fields the app actually consumes survive the mapping. If TMDB renames or reshapes a field tomorrow, one mapper gets fixed instead of forty components. The UI works with clean domain types and never sees the raw API shape.
+
+### Server functions and SSR
+
+All TMDB traffic runs through TanStack Start server functions, so the API key stays on the server and the browser never talks to TMDB directly. Pages render on the server and stream to the client, and the agent's answer is a streamed `ReadableStream`, which is why recommendations appear word by word.
+
+## Tech stack
+
+| Area | Choice |
+| --- | --- |
+| Framework | TanStack Start (file-based routing, SSR, server functions), React 19, TypeScript |
+| Data | TanStack Query for caching and async state, TMDB v3 API |
+| Styling | Tailwind CSS v4 with shadcn/ui components |
+| AI | Pi agent SDK with a GLM model, TypeBox tool schemas |
+| Carousel | Embla, shared by the hero billboard and the content rows |
+| Tooling | Bun, Biome |
+
+## Performance notes
+
+- **Query caching.** TanStack Query with a 5 minute stale time. Query keys are mirrored between surfaces: the home row for "popular movies" and the Discover tab read the same cache entry, so navigating between them fires no second request.
+- **Smooth search.** `placeholderData: keepPreviousData` keeps the old grid on screen while the next query loads.
+- **Image loading.** Posters lazy-load with explicit dimensions to avoid layout shift; the first hero slide is eager with `fetchPriority="high"` for a fast largest contentful paint. Image sizes are picked per surface from TMDB's official size list.
+- **Infinite scroll.** A sentinel with a 600px root margin triggers the next page before the user reaches the bottom, guarded against double fetches.
+- **Reduced motion.** Autoplay, transitions, and looping animations step aside for users who enable `prefers-reduced-motion`.
+
+## Running locally
 
 ```bash
 bun install
-bun --bun run dev
+cp .env.example .env   # then fill in your keys
+bun run dev
 ```
 
-# Building For Production
+Lint and format with `bun run check` (Biome), typecheck with `bunx tsc --noEmit`.
 
-To build this application for production:
+### Environment variables
 
-```bash
-bun --bun run build
-```
+| Variable | Purpose |
+| --- | --- |
+| `TMDB_API_KEY` | Required. TMDB v3 API key. |
+| `ANTHROPIC_API_KEY` / `ZAI_API_KEY` | LLM key for the concierge agent. |
+| `CONCIERGE_PROVIDER` / `CONCIERGE_MODEL` | Agent provider and model (defaults: `zai` / `glm-5-turbo`). |
+| `BLOCKED_MOVIE_IDS` / `BLOCKED_PERSON_IDS` | Optional comma-separated TMDB ids, hidden from all lists, credits, and agent results. |
+| `NITRO_PRESET` | Deployment only: set to `vercel` to emit the Vercel build output. |
 
-## Styling
+## Deployment
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
-
-```bash
-bun --bun run lint
-bun --bun run format
-bun --bun run check
-```
-
-
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
-```
-
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
-
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+The app deploys to Vercel from the Nitro build output (`NITRO_PRESET=vercel`), with the server function configured for a 60 second max duration to accommodate long agent turns.
