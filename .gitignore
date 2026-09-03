@@ -54,3 +54,6 @@ todos.json
 # Skills tooling
 .agents/
 skills-lock.json
+
+# Vercel
+.vercel
