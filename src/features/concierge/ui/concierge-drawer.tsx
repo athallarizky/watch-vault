@@ -45,6 +45,40 @@ const TIPS = [
 const STALE_TIME = 5 * 60_000;
 
 /**
+ * One assistant turn: markdown rendered safely (React elements, not raw
+ * HTML) with GFM tables/lists. The agent links titles to internal detail
+ * pages — intercept <a> so they use SPA navigation, and aria-live announces
+ * streamed tokens without stealing focus.
+ */
+function AnswerMarkdown({ text }: { text: string }) {
+	const navigate = useNavigate();
+	return (
+		<div aria-live="polite" className="prose prose-invert max-w-none prose-sm">
+			<Markdown
+				remarkPlugins={[remarkGfm]}
+				components={{
+					a: ({ href, children }) => (
+						<a
+							href={href}
+							className="font-medium text-primary-glow underline underline-offset-2"
+							onClick={(event) => {
+								if (!href?.startsWith("/")) return;
+								event.preventDefault();
+								navigate({ to: href });
+							}}
+						>
+							{children}
+						</a>
+					),
+				}}
+			>
+				{text}
+			</Markdown>
+		</div>
+	);
+}
+
+/**
  * Mounted once in the root layout so its state (conversation, open/closed)
  * survives navigation. Page context is derived from the current route:
  * on a movie detail page, the agent is told which movie is being viewed.
@@ -55,8 +89,7 @@ export function ConciergeDrawer() {
 	const [open, setOpen] = useState(false);
 	const [prompt, setPrompt] = useState("");
 	const [reducedMotion, setReducedMotion] = useState(false);
-	const { answer, isStreaming, ask } = useConcierge();
-	const navigate = useNavigate();
+	const { messages, answer, isStreaming, ask } = useConcierge();
 
 	// Looping gifs cannot honor reduced motion on their own — swap them for
 	// static icons when the user asks for less motion.
@@ -193,60 +226,44 @@ export function ConciergeDrawer() {
 					</header>
 
 					<div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
-						{answer ? (
-							// aria-live announces streamed tokens to screen readers
-							// without stealing focus. The agent answers in markdown —
-							// rendered safely (React elements, not raw HTML) with GFM
-							// tables/lists, styled by the Tailwind typography plugin.
-							<div
-								aria-live="polite"
-								className="prose prose-invert max-w-none prose-sm"
-							>
-								<Markdown
-									remarkPlugins={[remarkGfm]}
-									components={{
-										// The agent links movie titles to internal detail
-										// pages — intercept <a> so they use SPA navigation
-										// instead of a full page reload.
-										a: ({ href, children }) => (
-											<a
-												href={href}
-												className="font-medium text-primary-glow underline underline-offset-2"
-												onClick={(event) => {
-													if (!href?.startsWith("/")) return;
-													event.preventDefault();
-													navigate({ to: href });
-												}}
-											>
-												{children}
-											</a>
-										),
-									}}
-								>
-									{answer}
-								</Markdown>
-							</div>
-						) : isStreaming ? (
-							<div className="flex items-center gap-3 text-sm text-muted-foreground">
-								{reducedMotion ? (
-									<Spinner className="text-muted-foreground" />
-								) : (
-									<img
-										src="/assets/thinking.gif"
-										alt=""
-										aria-hidden="true"
-										draggable={false}
-										className="size-9 rounded-full"
-									/>
-								)}
-								Thinking...
-							</div>
-						) : (
+						{messages.length === 0 && !isStreaming ? (
 							<p className="text-sm text-muted-foreground">
 								Ask for recommendations — e.g. &quot;dark 90s sci-fi like Blade
 								Runner&quot;.
 							</p>
+						) : null}
+						{messages.map((message, index) =>
+							// biome-ignore lint/suspicious/noArrayIndexKey: append-only transcript, never reordered
+							message.role === "user" ? (
+								<div key={index} className="flex justify-end">
+									<p className="max-w-[85%] rounded-lg bg-secondary px-3 py-1.5 text-sm">
+										{message.content}
+									</p>
+								</div>
+							) : (
+								<AnswerMarkdown key={index} text={message.content} />
+							),
 						)}
+						{isStreaming ? (
+							answer ? (
+								<AnswerMarkdown text={answer} />
+							) : (
+								<div className="flex items-center gap-3 text-sm text-muted-foreground">
+									{reducedMotion ? (
+										<Spinner className="text-muted-foreground" />
+									) : (
+										<img
+											src="/assets/thinking.gif"
+											alt=""
+											aria-hidden="true"
+											draggable={false}
+											className="size-9 rounded-full"
+										/>
+									)}
+									Thinking...
+								</div>
+							)
+						) : null}
 					</div>
 
 					<form
