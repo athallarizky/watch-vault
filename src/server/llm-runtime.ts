@@ -1,3 +1,4 @@
+import { InMemoryCredentialStore } from "@earendil-works/pi-ai";
 import {
 	createAgentSession,
 	ModelRuntime,
@@ -14,7 +15,16 @@ function getDefaultModel(): string {
 }
 
 export async function createLlmRuntime(): Promise<ModelRuntime> {
-	const modelRuntime = await ModelRuntime.create();
+	const modelRuntime = await ModelRuntime.create({
+		// The default file credential store mkdirs ~/.pi/agent on first read,
+		// which crashes on read-only serverless home directories. Keep
+		// credentials in memory so API keys resolve straight from the env.
+		// Set CONCIERGE_FILE_CREDENTIALS=1 to restore the file store locally.
+		credentials:
+			process.env.CONCIERGE_FILE_CREDENTIALS === "1"
+				? undefined
+				: new InMemoryCredentialStore(),
+	});
 	const providerId = getProviderId();
 
 	const baseUrl = process.env.ANTHROPIC_BASE_URL;
