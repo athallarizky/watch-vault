@@ -5,6 +5,7 @@ import {
 import { Type } from "typebox";
 import type { IGenreListResponse } from "@/entities/genre/model/genre.types";
 import type { TMovieApiListResponse } from "@/entities/movie/model/movie.types";
+import { withoutBlockedMovies } from "./content-filter";
 import { tmdbGet } from "./tmdb";
 
 const MAX_RESULTS = 8;
@@ -26,7 +27,8 @@ function compactMovie(m: {
 }
 
 function movieListToText(list: TMovieApiListResponse): string {
-	const items = list.results.slice(0, MAX_RESULTS);
+	// Blocklisted ids never reach the agent, so it cannot recommend them.
+	const items = withoutBlockedMovies(list.results).slice(0, MAX_RESULTS);
 	if (items.length === 0) return "No results.";
 	return JSON.stringify(items.map(compactMovie), null, 2);
 }

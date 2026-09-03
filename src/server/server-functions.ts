@@ -29,6 +29,7 @@ import type {
 	TTvApiListResponse,
 	TTvCreditsApi,
 } from "@/entities/tv/model/tv.types";
+import { filterCredits, filterMovieList, filterPersonList } from "./content-filter";
 import { tmdbGet } from "./tmdb";
 
 // Movie
@@ -37,7 +38,7 @@ export const getPopularMovies = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TMovieApiListResponse>("/movie/popular", {
 			page: data.page,
-		}).then(mapMovieList),
+		}).then(mapMovieList).then(filterMovieList),
 	);
 
 export const getTopRatedMovies = createServerFn({ method: "GET" })
@@ -45,7 +46,7 @@ export const getTopRatedMovies = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TMovieApiListResponse>("/movie/top_rated", {
 			page: data.page,
-		}).then(mapMovieList),
+		}).then(mapMovieList).then(filterMovieList),
 	);
 
 export const getUpcomingMovies = createServerFn({ method: "GET" })
@@ -53,7 +54,7 @@ export const getUpcomingMovies = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TMovieApiListResponse>("/movie/upcoming", {
 			page: data.page,
-		}).then(mapMovieList),
+		}).then(mapMovieList).then(filterMovieList),
 	);
 
 export const getNowPlayingMovies = createServerFn({ method: "GET" })
@@ -61,7 +62,7 @@ export const getNowPlayingMovies = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TMovieApiListResponse>("/movie/now_playing", {
 			page: data.page,
-		}).then(mapMovieList),
+		}).then(mapMovieList).then(filterMovieList),
 	);
 
 export const searchMovies = createServerFn({ method: "GET" })
@@ -69,7 +70,7 @@ export const searchMovies = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TMovieApiListResponse>("/search/movie", {
 			query: data.query,
-		}).then(mapMovieList),
+		}).then(mapMovieList).then(filterMovieList),
 	);
 
 export const getMovieDetails = createServerFn({ method: "GET" })
@@ -81,9 +82,9 @@ export const getMovieDetails = createServerFn({ method: "GET" })
 export const getMovieCredits = createServerFn({ method: "GET" })
 	.validator((data: { movieId: number }) => data)
 	.handler(({ data }) =>
-		tmdbGet<TMovieCreditsApi>(`/movie/${data.movieId}/credits`).then(
-			mapMovieCredits,
-		),
+		tmdbGet<TMovieCreditsApi>(`/movie/${data.movieId}/credits`)
+			.then(mapMovieCredits)
+			.then(filterCredits),
 	);
 
 // TV
@@ -125,7 +126,9 @@ export const getTvDetails = createServerFn({ method: "GET" })
 export const getTvCredits = createServerFn({ method: "GET" })
 	.validator((data: { tvId: number }) => data)
 	.handler(({ data }) =>
-		tmdbGet<TTvCreditsApi>(`/tv/${data.tvId}/credits`).then(mapTvCredits),
+		tmdbGet<TTvCreditsApi>(`/tv/${data.tvId}/credits`)
+			.then(mapTvCredits)
+			.then(filterCredits),
 	);
 
 // People
@@ -134,7 +137,9 @@ export const getPopularPeople = createServerFn({ method: "GET" })
 	.handler(({ data }) =>
 		tmdbGet<TPersonApiListResponse>("/person/popular", {
 			page: data.page,
-		}).then(mapPersonList),
+		})
+			.then(mapPersonList)
+			.then(filterPersonList),
 	);
 
 export const getPersonDetails = createServerFn({ method: "GET" })
