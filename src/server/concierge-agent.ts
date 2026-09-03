@@ -47,7 +47,40 @@ export interface IConciergeContext {
 	title?: string;
 }
 
-function buildPrompt(userInput: string, ctx: IConciergeContext): string {
+export interface IConciergeMessage {
+	role: "user" | "assistant";
+	content: string;
+}
+
+// Server-side replay guards: bound the history depth and per-message size so
+// a long (or hostile) transcript cannot balloon the prompt.
+const MAX_HISTORY = 10;
+const MAX_MESSAGE_LENGTH = 4000;
+
+function normalizeMessages(input: unknown): IConciergeMessage[] {
+	if (!Array.isArray(input)) return [];
+	return input
+		.filter(
+			(m): m is IConciergeMessage =>
+				!!m &&
+				typeof m === "object" &&
+				((m as IConciergeMessage).role === "user" ||
+					(m as IConciergeMessage).role === "assistant") &&
+				typeof (m as IConciergeMessage).content === "string" &&
+				(m as IConciergeMessage).content.length > 0,
+		)
+		.map((m) => ({ role: m.role, content: m.content.slice(0, MAX_MESSAGE_LENGTH) }))
+		.slice(-MAX_HISTORY);
+}
+
+/**
+ * Prompt = system rules + current page context + replayed transcript, with
+ * the newest user message anchored under "Request user:" like before.
+ */
+export function buildPrompt(
+	messages: IConciergeMessage[],
+	ctx: IConciergeContext,
+): string {
 	const lines: string[] = [SYSTEM_PROMPT, ""];
 
 	if (ctx.movieId && ctx.title) {
@@ -56,15 +89,30 @@ function buildPrompt(userInput: string, ctx: IConciergeContext): string {
 		lines.push("");
 	}
 
-	lines.push(`Request user: ${userInput}`);
+	const history = messages.slice(0, -1);
+	for (const message of history) {
+		lines.push(
+			message.role === "user"
+				? `User: ${message.content}`
+				: `Assistant: ${message.content}`,
+		);
+	}
+	if (history.length > 0) lines.push("");
+
+	lines.push(`Request user: ${messages[messages.length - 1]?.content ?? ""}`);
 	return lines.join("\n");
 }
 
 export const concierge = createServerFn({ method: "POST" })
 	.middleware([rateLimitMiddleware])
-	.validator((data: { prompt: string; context?: IConciergeContext }) => data)
+	.validator(
+		(data: { messages: IConciergeMessage[]; context?: IConciergeContext }) => ({
+			messages: normalizeMessages(data.messages),
+			context: data.context,
+		}),
+	)
 	.handler(async ({ data }) => {
-		const prompt = buildPrompt(data.prompt, data.context ?? {});
+		const prompt = buildPrompt(data.messages, data.context ?? {});
 
 		return new ReadableStream<string>({
 			async start(controller) {
